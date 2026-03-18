@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suivi du temps</title>
-  <!-- Favicon SVG inline -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%231D9E75'/%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='white' stroke-width='1.5'/%3E%3Cline x1='16' y1='8' x2='16' y2='16' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='21' y2='19' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
@@ -74,7 +73,6 @@
     .alert { padding:12px 16px; border-radius:var(--radius); font-size:14px; margin-bottom:1.25rem; border:.5px solid; line-height:1.5; }
     .alert.ok { background:var(--teal-light); border-color:var(--green-border); color:var(--green-text); }
     .alert.warn { background:var(--amber-bg); border-color:var(--amber-border); color:var(--amber-text); }
-    /* Train */
     .train-card { border-radius:var(--radius-lg); margin-bottom:1.5rem; overflow:hidden; border:.5px solid var(--border); }
     .train-header { padding:12px 16px; display:flex; justify-content:space-between; align-items:center; background:var(--bg2); border-bottom:.5px solid var(--border); }
     .train-header-label { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text2); }
@@ -92,7 +90,6 @@
     .train-pill.missed { opacity:.3; text-decoration:line-through; }
     .train-walk { font-size:12px; color:var(--text3); margin-top:12px; display:flex; align-items:center; gap:5px; }
     .train-waiting { padding:6px 0 4px; font-size:14px; color:var(--text2); }
-    /* History */
     .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
     .section-title { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text2); }
     .export-btn { padding:7px 14px; font-size:13px; border-radius:var(--radius); border:.5px solid var(--border2); background:var(--bg); color:var(--text); cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:6px; }
@@ -105,12 +102,21 @@
     .history-hours { font-weight:600; font-size:15px; }
     .edit-hist-btn { padding:4px 10px; font-size:12px; border-radius:var(--radius); border:.5px solid var(--border); background:transparent; color:var(--text2); cursor:pointer; font-family:inherit; margin-top:4px; }
     .edit-hist-btn:hover { background:var(--bg2); }
-    /* Modal */
+    /* Modal 2 étapes */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:100; padding:1rem; }
     .modal-overlay.hidden { display:none; }
     .modal { background:var(--bg); border-radius:var(--radius-lg); padding:1.5rem; width:100%; max-width:360px; border:.5px solid var(--border); }
-    .modal-title { font-size:16px; font-weight:600; color:var(--text); margin-bottom:4px; }
-    .modal-date { font-size:13px; color:var(--text2); margin-bottom:1.25rem; }
+    .modal-title { font-size:16px; font-weight:600; color:var(--text); margin-bottom:1.25rem; }
+    .date-picker-label { font-size:12px; color:var(--text2); margin-bottom:8px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+    .date-input-row { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+    .date-input-row input[type="date"] { flex:1; padding:8px 10px; border-radius:var(--radius); border:.5px solid var(--border2); background:var(--bg); color:var(--text); font-size:14px; font-family:inherit; }
+    .quick-days { display:flex; flex-wrap:wrap; gap:6px; }
+    .quick-day { padding:5px 10px; border-radius:var(--radius); font-size:13px; border:.5px solid var(--border); background:var(--bg2); color:var(--text2); cursor:pointer; font-family:inherit; transition:all .15s; white-space:nowrap; }
+    .quick-day:hover { background:var(--bg); border-color:var(--border2); color:var(--text); }
+    .quick-day.selected { background:var(--teal-light); border-color:var(--green-border); color:var(--green-text); font-weight:500; }
+    .quick-day.has-data::after { content:'•'; margin-left:4px; color:var(--teal); font-size:10px; }
+    .modal-step2 { display:none; }
+    .modal-step2.visible { display:block; }
     .modal-field { margin-bottom:1rem; }
     .modal-field label { display:block; font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
     .modal-field input[type="time"] { width:100%; padding:9px 12px; border-radius:var(--radius); border:.5px solid var(--border2); background:var(--bg); color:var(--text); font-size:15px; font-family:inherit; }
@@ -121,6 +127,13 @@
     .modal-cancel:hover { background:var(--bg2); }
     .modal-delete { padding:10px 12px; border-radius:var(--radius); border:.5px solid #F7C1C1; background:transparent; color:var(--red); font-size:14px; cursor:pointer; font-family:inherit; }
     .modal-delete:hover { background:#FCEBEB; }
+    .modal-next { flex:1; padding:10px; border-radius:var(--radius); border:none; background:var(--teal); color:white; font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; }
+    .modal-next:hover { background:var(--teal-dark); }
+    .modal-next:disabled { opacity:.4; cursor:not-allowed; }
+    .selected-date-label { font-size:13px; color:var(--text2); margin-bottom:1rem; padding:8px 12px; background:var(--bg2); border-radius:var(--radius); }
+    .selected-date-label strong { color:var(--text); }
+    .back-btn { font-size:13px; color:var(--text2); cursor:pointer; background:none; border:none; font-family:inherit; padding:0; margin-bottom:1rem; display:flex; align-items:center; gap:4px; }
+    .back-btn:hover { color:var(--text); }
     /* Timer */
     .timer-wrap { display:flex; flex-direction:column; align-items:center; padding:2rem 1rem 1.5rem; }
     .timer-ring-wrap { position:relative; width:220px; height:220px; margin-bottom:1.5rem; }
@@ -142,19 +155,37 @@
 </head>
 <body>
 
-<!-- Modal édition historique -->
-<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+<!-- Modal sélection jour + horaires -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModalBg(event)">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Modifier la journée</div>
-    <div class="modal-date" id="modal-date-label"></div>
-    <div class="modal-field"><label>Arrivée</label><input type="time" id="m-start"/></div>
-    <div class="modal-field"><label>Début de pause</label><input type="time" id="m-ps"/></div>
-    <div class="modal-field"><label>Fin de pause</label><input type="time" id="m-pe"/></div>
-    <div class="modal-field"><label>Départ</label><input type="time" id="m-end"/></div>
-    <div class="modal-actions">
-      <button class="modal-delete" onclick="deleteHistDay()">Supprimer</button>
-      <button class="modal-cancel" onclick="document.getElementById('modal-overlay').classList.add('hidden')">Annuler</button>
-      <button class="modal-save" onclick="saveHistDay()">Enregistrer</button>
+    <div class="modal-title" id="modal-title">Choisir un jour</div>
+
+    <!-- Étape 1 : sélection du jour -->
+    <div id="step1">
+      <div class="date-picker-label">Sélectionner un jour</div>
+      <div class="date-input-row">
+        <input type="date" id="date-picker-input" oninput="onDateInput(this.value)" />
+      </div>
+      <div class="quick-days" id="quick-days"></div>
+      <div class="modal-actions" style="margin-top:1.25rem">
+        <button class="modal-cancel" onclick="closeModalDirect()">Annuler</button>
+        <button class="modal-next" id="btn-next" onclick="goToStep2()" disabled>Suivant →</button>
+      </div>
+    </div>
+
+    <!-- Étape 2 : saisie des horaires -->
+    <div class="modal-step2" id="step2">
+      <button class="back-btn" onclick="goToStep1()">← Changer de jour</button>
+      <div class="selected-date-label" id="selected-date-label"></div>
+      <div class="modal-field"><label>Arrivée</label><input type="time" id="m-start"/></div>
+      <div class="modal-field"><label>Début de pause</label><input type="time" id="m-ps"/></div>
+      <div class="modal-field"><label>Fin de pause</label><input type="time" id="m-pe"/></div>
+      <div class="modal-field"><label>Départ</label><input type="time" id="m-end"/></div>
+      <div class="modal-actions">
+        <button class="modal-delete" id="btn-delete" onclick="deleteHistDay()" style="display:none">Supprimer</button>
+        <button class="modal-cancel" onclick="closeModalDirect()">Annuler</button>
+        <button class="modal-save" onclick="saveHistDay()">Enregistrer</button>
+      </div>
     </div>
   </div>
 </div>
@@ -203,7 +234,7 @@
       <div id="history-list" style="margin-top:12px"></div>
       <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
         <button class="reset-btn" onclick="clearToday()">Réinitialiser aujourd'hui</button>
-        <button class="reset-btn" onclick="openNewEntry()">+ Ajouter une journée</button>
+        <button class="reset-btn" onclick="openModal()">+ Ajouter / modifier un jour</button>
       </div>
     </div>
   </div>
@@ -235,8 +266,10 @@
 const GOAL_MINS=7*60+15,GOAL_SECS=GOAL_MINS*60,MIN_PAUSE=50,WALK_MINS=10;
 const TRAINS=[17*60+15,17*60+29,17*60+44,17*60+59,18*60+15,18*60+29,18*60+44,18*60+59];
 const HISTORY_KEY='wt_history_v2',TODAY_KEY='wt_today_v2',CIRC=2*Math.PI*95;
-const DAYS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-let state={},liveInterval=null,timerInterval=null,editingDate=null;
+const DAYS_S=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const DAYS_L=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MONTHS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+let state={},liveInterval=null,timerInterval=null,selectedDateStr=null;
 
 function loadState(){try{const s=localStorage.getItem(TODAY_KEY),t=new Date().toDateString();if(s){const p=JSON.parse(s);if(p.date===t){state=p;return;}}}catch(e){}state={date:new Date().toDateString(),start:null,'pause-start':null,'pause-end':null,end:null};}
 function saveState(){try{localStorage.setItem(TODAY_KEY,JSON.stringify(state));}catch(e){}if(state.start&&state.end)saveToHistory();}
@@ -249,26 +282,22 @@ function minsToDisplay(m){if(m===null||m<0)return'--';const h=Math.floor(m/60),m
 function secsToHMS(s){if(s<0)s=0;return String(Math.floor(s/3600))+':'+String(Math.floor((s%3600)/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function getNow(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
 function nowSecs(){const n=new Date();return n.getHours()*3600+n.getMinutes()*60+n.getSeconds();}
+function toInputDate(dateStr){const d=new Date(dateStr);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dateToFull(dateStr){const d=new Date(dateStr);return DAYS_L[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();}
 
-// Pause effective pour ETA : max(réelle, 50min)
-function effPause(pauseReal){ return Math.max(pauseReal!==null?pauseReal:0, MIN_PAUSE); }
+function effPause(p){return Math.max(p!==null?p:0,MIN_PAUSE);}
 
 function computeEta(s,nowM){
   if(!s.start)return null;
   const sM=toMins(s.start),psM=s['pause-start']?toMins(s['pause-start']):null,peM=s['pause-end']?toMins(s['pause-end']):null,eM=s.end?toMins(s.end):nowM;
-  let pauseReal=null;
-  if(psM&&peM)pauseReal=peM-psM; else if(psM&&!peM)pauseReal=nowM-psM;
-  let worked;
-  if(s.end){worked=eM-sM-(psM&&peM?peM-psM:0);}
-  else if(s['pause-end']){worked=nowM-sM-(peM-psM);}
-  else if(s['pause-start']){worked=psM-sM;}
-  else{worked=nowM-sM;}
-  const rem=Math.max(0,GOAL_MINS-worked);
+  let pr=null;if(psM&&peM)pr=peM-psM;else if(psM&&!peM)pr=nowM-psM;
+  let w;if(s.end){w=eM-sM-(psM&&peM?peM-psM:0);}else if(s['pause-end']){w=nowM-sM-(peM-psM);}else if(s['pause-start']){w=psM-sM;}else{w=nowM-sM;}
+  const rem=Math.max(0,GOAL_MINS-w);
   let eta;
-  if(s['pause-end']){ eta=nowM+rem; }
-  else if(s['pause-start']&&!s['pause-end']){ eta=nowM+Math.max(0,effPause(pauseReal)-pauseReal)+rem; }
-  else{ eta=nowM+rem+effPause(null); }
-  return{eta,worked,pauseReal};
+  if(s['pause-end']){eta=nowM+rem;}
+  else if(s['pause-start']&&!s['pause-end']){eta=nowM+Math.max(0,effPause(pr)-pr)+rem;}
+  else{eta=nowM+rem+effPause(null);}
+  return{eta,worked:w,pauseReal:pr};
 }
 
 function computeWorkedSecs(s,ns){
@@ -276,12 +305,8 @@ function computeWorkedSecs(s,ns){
   const sS=toSecs(s.start),psS=s['pause-start']?toSecs(s['pause-start']):null,peS=s['pause-end']?toSecs(s['pause-end']):null,eS=s.end?toSecs(s.end):ns;
   let ps=null;if(psS&&peS)ps=peS-psS;else if(psS&&!peS)ps=ns-psS;
   let w;if(s.end){w=eS-sS-(psS&&peS?peS-psS:0);}else if(s['pause-end']){w=ns-sS-(peS-psS);}else if(s['pause-start']){w=psS-sS;}else{w=ns-sS;}
-  const effP=effPause(ps!==null?ps/60:null)*60;
-  const rem=Math.max(0,GOAL_SECS-w);
-  let eta;
-  if(s['pause-end']){eta=ns+rem;}
-  else if(s['pause-start']&&!s['pause-end']){eta=ns+Math.max(0,effP-(ps||0))+rem;}
-  else{eta=ns+rem+effP;}
+  const effP=effPause(ps!==null?ps/60:null)*60,rem=Math.max(0,GOAL_SECS-w);
+  let eta;if(s['pause-end']){eta=ns+rem;}else if(s['pause-start']&&!s['pause-end']){eta=ns+Math.max(0,effP-(ps||0))+rem;}else{eta=ns+rem+effP;}
   return{worked:Math.max(0,w),pause:ps,eta};
 }
 
@@ -305,8 +330,7 @@ function render(){
 function startLive(){
   if(liveInterval)clearInterval(liveInterval);if(timerInterval)clearInterval(timerInterval);
   if(!state.start){document.getElementById('summary-box').style.display='none';document.getElementById('alert-box').style.display='none';updateTimerUI(0,null,null,'idle');renderTrain(null);return;}
-  document.getElementById('summary-box').style.display='block';
-  updateLive();updateTimer();
+  document.getElementById('summary-box').style.display='block';updateLive();updateTimer();
   if(!state.end){liveInterval=setInterval(()=>{updateLive();updateTimer();},1000);}
 }
 
@@ -332,7 +356,7 @@ function renderTrain(etaMins){
   const dep=etaMins+WALK_MINS,catchable=TRAINS.filter(t=>t>=dep),next=catchable[0]||null;
   let html='';
   if(next===null){html+=`<div style="font-size:15px;color:var(--red);font-weight:600;margin-bottom:8px;">Aucun train attrapable ce soir</div><div class="train-sub">Fin estimée ${minsToStr(etaMins)} + 10 min = arrivée gare ${minsToStr(dep)}. Dernier train à ${minsToStr(TRAINS[TRAINS.length-1])}.</div>`;}
-  else{const margin=next-dep,comfy=margin>=5;html+=`<div class="train-next"><div class="train-time-big ${comfy?'ok':'warn'}">${minsToStr(next)}</div><div class="train-margin ${comfy?'ok':'warn'}">${margin<=0?'pile à l\'heure':margin===1?'1 min de marge':margin+' min de marge'}</div></div><div class="train-sub">Fin estimée ${minsToStr(etaMins)} + 10 min de marche = arrivée gare ${minsToStr(dep)}.</div>`;}
+  else{const margin=next-dep,comfy=margin>=5;html+=`<div class="train-next"><div class="train-time-big ${comfy?'ok':'warn'}">${minsToStr(next)}</div><div class="train-margin ${comfy?'ok':'warn'}">${margin<=0?'pile à l\'heure':margin===1?'1 min de marge':margin+' min de marge'}</div></div><div class="train-sub">Fin estimée ${minsToStr(etaMins)} + 10 min = arrivée gare ${minsToStr(dep)}.</div>`;}
   html+=`<div class="train-list">`;TRAINS.forEach(t=>{const missed=t<dep,isNext=t===next,isCatch=!missed&&t!==next;html+=`<div class="train-pill${missed?' missed':isNext?' next':isCatch?' catchable':''}">${minsToStr(t)}</div>`;});
   html+=`</div><div class="train-walk"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="3" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.5L6 10l2 1.5 1.5 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M8 5.5l1.5 3-2 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>10 min de marche jusqu'à la gare</div>`;
   body.innerHTML=html;
@@ -349,55 +373,107 @@ function updateTimerUI(wS,pS,eS,ts){
   document.getElementById('t-start').textContent=state.start||'--:--';document.getElementById('t-pause').textContent=pS!==null?minsToDisplay(Math.floor(pS/60)):'--';document.getElementById('t-eta').textContent=eS?minsToStr(Math.floor(eS/60)):'--:--';
 }
 
-function renderHistory(){
-  const el=document.getElementById('history-list'),hist=getHistory().slice().reverse();
-  if(!hist.length){el.innerHTML='<div style="font-size:14px;color:var(--text2)">Aucune donnée enregistrée.</div>';return;}
-  el.innerHTML=hist.map(h=>{
-    const d=new Date(h.date),label=DAYS[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
-    let w=null,p=null;if(h.start&&h.end){const pp=(h['pause-start']&&h['pause-end'])?toMins(h['pause-end'])-toMins(h['pause-start']):0;w=toMins(h.end)-toMins(h.start)-pp;p=pp;}
-    const ok=w!==null&&w>=GOAL_MINS&&p>=MIN_PAUSE,wn=w!==null&&(w<GOAL_MINS||p<MIN_PAUSE),color=ok?'#1D9E75':wn?'#BA7517':'var(--text)';
-    const detail=h.start?(h.start+(h['pause-start']?(' → pause '+h['pause-start']+(h['pause-end']?' – '+h['pause-end']:'')):'')+(h.end?' → '+h.end:'')):'' ;
-    return`<div class="history-row"><div><div class="history-day">${label}</div><div class="history-detail">${detail}</div></div><div class="history-right"><div class="history-hours" style="color:${color}">${w!==null?minsToDisplay(w):'--'}</div><div class="history-detail">${p!==null?'pause '+minsToDisplay(p):''}</div><button class="edit-hist-btn" onclick="openEditModal('${h.date}')">Modifier</button></div></div>`;
+// === MODAL SÉLECTION JOUR ===
+function openModal(preselect){
+  selectedDateStr=preselect||null;
+  buildQuickDays();
+  document.getElementById('date-picker-input').value=preselect?toInputDate(preselect):'';
+  const btnNext=document.getElementById('btn-next');
+  btnNext.disabled=!preselect;
+  document.getElementById('step1').style.display='block';
+  document.getElementById('step2').classList.remove('visible');
+  document.getElementById('modal-title').textContent='Choisir un jour';
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function buildQuickDays(){
+  const hist=getHistory();
+  const items=[];
+  for(let i=1;i<=60;i++){
+    const d=new Date();d.setDate(d.getDate()-i);
+    if(d.getDay()===0||d.getDay()===6) continue;
+    items.push(d);
+    if(items.length>=10) break;
+  }
+  document.getElementById('quick-days').innerHTML=items.map(d=>{
+    const ds=d.toDateString();
+    const hasData=hist.some(h=>h.date===ds);
+    const isSel=selectedDateStr===ds;
+    const label=DAYS_S[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1);
+    return`<button class="quick-day${isSel?' selected':''}${hasData?' has-data':''}" onclick="selectQuickDay('${ds}',this)">${label}</button>`;
   }).join('');
 }
 
-function openEditModal(dateStr){
-  editingDate=dateStr;const hist=getHistory();const h=hist.find(x=>x.date===dateStr)||{};
-  const d=new Date(dateStr);document.getElementById('modal-date-label').textContent=DAYS[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
-  document.getElementById('m-start').value=h.start||'';document.getElementById('m-ps').value=h['pause-start']||'';document.getElementById('m-pe').value=h['pause-end']||'';document.getElementById('m-end').value=h.end||'';
-  document.getElementById('modal-overlay').classList.remove('hidden');
+function selectQuickDay(dateStr,el){
+  selectedDateStr=dateStr;
+  document.getElementById('date-picker-input').value=toInputDate(dateStr);
+  document.querySelectorAll('.quick-day').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btn-next').disabled=false;
 }
 
-function openNewEntry(){
-  const d=new Date();d.setDate(d.getDate()-1);const dateStr=d.toDateString();
-  const existing=getHistory().find(x=>x.date===dateStr);
-  if(existing){openEditModal(dateStr);return;}
-  editingDate=dateStr;const ld=new Date(dateStr);
-  document.getElementById('modal-date-label').textContent=DAYS[ld.getDay()]+' '+ld.getDate()+'/'+(ld.getMonth()+1)+'/'+ld.getFullYear()+' (nouvelle entrée)';
-  document.getElementById('m-start').value='';document.getElementById('m-ps').value='';document.getElementById('m-pe').value='';document.getElementById('m-end').value='';
-  document.getElementById('modal-overlay').classList.remove('hidden');
+function onDateInput(val){
+  if(!val)return;
+  const d=new Date(val+'T12:00:00');selectedDateStr=d.toDateString();
+  document.querySelectorAll('.quick-day').forEach(b=>{b.classList.remove('selected');if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(selectedDateStr))b.classList.add('selected');});
+  document.getElementById('btn-next').disabled=false;
+}
+
+function goToStep2(){
+  if(!selectedDateStr)return;
+  const h=getHistory().find(x=>x.date===selectedDateStr)||{};
+  document.getElementById('selected-date-label').innerHTML=`<strong>${dateToFull(selectedDateStr)}</strong>`;
+  document.getElementById('m-start').value=h.start||'';
+  document.getElementById('m-ps').value=h['pause-start']||'';
+  document.getElementById('m-pe').value=h['pause-end']||'';
+  document.getElementById('m-end').value=h.end||'';
+  const hasData=getHistory().some(x=>x.date===selectedDateStr);
+  document.getElementById('btn-delete').style.display=hasData?'block':'none';
+  document.getElementById('step1').style.display='none';
+  document.getElementById('step2').classList.add('visible');
+  document.getElementById('modal-title').textContent='Horaires du jour';
+}
+
+function goToStep1(){
+  document.getElementById('step1').style.display='block';
+  document.getElementById('step2').classList.remove('visible');
+  document.getElementById('modal-title').textContent='Choisir un jour';
+  buildQuickDays();
 }
 
 function saveHistDay(){
-  if(!editingDate)return;
+  if(!selectedDateStr)return;
   const start=document.getElementById('m-start').value,ps=document.getElementById('m-ps').value,pe=document.getElementById('m-pe').value,end=document.getElementById('m-end').value;
-  let hist=getHistory();hist=hist.filter(x=>x.date!==editingDate);
-  if(start||end)hist.push({date:editingDate,start:start||null,'pause-start':ps||null,'pause-end':pe||null,end:end||null});
+  let hist=getHistory();hist=hist.filter(x=>x.date!==selectedDateStr);
+  if(start||end)hist.push({date:selectedDateStr,start:start||null,'pause-start':ps||null,'pause-end':pe||null,end:end||null});
   try{localStorage.setItem(HISTORY_KEY,JSON.stringify(hist));}catch(e){}
-  document.getElementById('modal-overlay').classList.add('hidden');editingDate=null;renderHistory();
+  document.getElementById('modal-overlay').classList.add('hidden');selectedDateStr=null;renderHistory();
 }
 
 function deleteHistDay(){
-  if(!editingDate)return;let hist=getHistory();hist=hist.filter(x=>x.date!==editingDate);
+  if(!selectedDateStr)return;let hist=getHistory();hist=hist.filter(x=>x.date!==selectedDateStr);
   try{localStorage.setItem(HISTORY_KEY,JSON.stringify(hist));}catch(e){}
-  document.getElementById('modal-overlay').classList.add('hidden');editingDate=null;renderHistory();
+  document.getElementById('modal-overlay').classList.add('hidden');selectedDateStr=null;renderHistory();
 }
 
-function closeModal(e){document.getElementById('modal-overlay').classList.add('hidden');}
+function closeModalBg(e){document.getElementById('modal-overlay').classList.add('hidden');}
+function closeModalDirect(){document.getElementById('modal-overlay').classList.add('hidden');}
+
+function renderHistory(){
+  const el=document.getElementById('history-list'),hist=getHistory().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!hist.length){el.innerHTML='<div style="font-size:14px;color:var(--text2)">Aucune donnée enregistrée.</div>';return;}
+  el.innerHTML=hist.map(h=>{
+    const d=new Date(h.date),label=DAYS_S[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+    let w=null,p=null;if(h.start&&h.end){const pp=(h['pause-start']&&h['pause-end'])?toMins(h['pause-end'])-toMins(h['pause-start']):0;w=toMins(h.end)-toMins(h.start)-pp;p=pp;}
+    const ok=w!==null&&w>=GOAL_MINS&&p>=MIN_PAUSE,wn=w!==null&&(w<GOAL_MINS||p<MIN_PAUSE),color=ok?'#1D9E75':wn?'#BA7517':'var(--text)';
+    const detail=h.start?(h.start+(h['pause-start']?(' → pause '+h['pause-start']+(h['pause-end']?' – '+h['pause-end']:'')):'')+(h.end?' → '+h.end:'')):'' ;
+    return`<div class="history-row"><div><div class="history-day">${label}</div><div class="history-detail">${detail}</div></div><div class="history-right"><div class="history-hours" style="color:${color}">${w!==null?minsToDisplay(w):'--'}</div><div class="history-detail">${p!==null?'pause '+minsToDisplay(p):''}</div><button class="edit-hist-btn" onclick="openModal('${h.date}')">Modifier</button></div></div>`;
+  }).join('');
+}
 
 function exportPDF(){
   const{jsPDF}=window.jspdf;if(!jsPDF){alert('PDF en cours de chargement, réessayez.');return;}
-  const doc=new jsPDF({unit:'mm',format:'a4'}),hist=getHistory().slice().reverse();
+  const doc=new jsPDF({unit:'mm',format:'a4'}),hist=getHistory().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
   const W=210,M=18,cW=W-M*2;let y=22;const teal='#1D9E75',dark='#1a1a1a',mid='#555',light='#888',bg='#F4FAF7',warn='#BA7517',bad='#E24B4A';
   doc.setFillColor(teal);doc.rect(0,0,W,14,'F');doc.setTextColor('#ffffff');doc.setFontSize(13);doc.setFont('helvetica','bold');doc.text('Rapport de suivi du temps',M,9.5);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Généré le '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),W-M,9.5,{align:'right'});
@@ -411,7 +487,7 @@ function exportPDF(){
   y+=2;doc.setDrawColor('#ccc');doc.setLineWidth(.3);doc.line(M,y,W-M,y);y+=5;doc.setFont('helvetica','normal');
   hist.forEach(h=>{
     if(y>270){doc.addPage();y=18;doc.setTextColor(mid);doc.setFontSize(8);doc.setFont('helvetica','bold');['Date','Arrivée','Dép. pause','Ret. pause','Départ','Travaillé','Pause'].forEach((hh,i)=>doc.text(hh,c[i],y));y+=2;doc.line(M,y,W-M,y);y+=5;doc.setFont('helvetica','normal');}
-    const d=new Date(h.date),label=DAYS[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+'/'+(String(d.getMonth()+1).padStart(2,'0'));
+    const d=new Date(h.date),label=DAYS_S[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+'/'+(String(d.getMonth()+1).padStart(2,'0'));
     let w=null,p=null;if(h.start&&h.end){const pp=(h['pause-start']&&h['pause-end'])?toMins(h['pause-end'])-toMins(h['pause-start']):0;w=toMins(h.end)-toMins(h.start)-pp;p=pp;}
     const ok=w>=GOAL_MINS&&p>=MIN_PAUSE;
     doc.setTextColor(dark);doc.text(label,c[0],y);doc.text(h.start||'--',c[1],y);doc.text(h['pause-start']||'--',c[2],y);doc.text(h['pause-end']||'--',c[3],y);doc.text(h.end||'--',c[4],y);
