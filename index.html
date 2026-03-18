@@ -1,42 +1,45 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suivi du temps</title>
+  <!-- Favicon SVG inline -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%231D9E75'/%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='white' stroke-width='1.5'/%3E%3Cline x1='16' y1='8' x2='16' y2='16' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='21' y2='19' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #ffffff; --bg2: #f5f5f4; --bg3: #eeede9;
-      --text: #1a1a1a; --text2: #666; --text3: #999;
-      --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
-      --teal: #1D9E75; --teal-light: #E1F5EE; --teal-dark: #0F6E56;
-      --amber: #EF9F27; --amber-text: #633806; --amber-bg: #FAEEDA; --amber-border: #FAC775;
-      --red: #E24B4A; --green-text: #085041; --green-border: #5DCAA5;
-      --radius: 8px; --radius-lg: 12px;
+      --bg:#ffffff; --bg2:#f5f5f4; --bg3:#eeede9;
+      --text:#1a1a1a; --text2:#666; --text3:#999;
+      --border:rgba(0,0,0,0.12); --border2:rgba(0,0,0,0.22);
+      --teal:#1D9E75; --teal-light:#E1F5EE; --teal-dark:#0F6E56;
+      --amber:#EF9F27; --amber-text:#633806; --amber-bg:#FAEEDA; --amber-border:#FAC775;
+      --red:#E24B4A; --green-text:#085041; --green-border:#5DCAA5;
+      --radius:8px; --radius-lg:12px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #1c1c1e; --bg2: #2c2c2e; --bg3: #3a3a3c;
-        --text: #f2f2f7; --text2: #aeaeb2; --text3: #636366;
-        --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
-        --teal-light: #0a3d2b; --amber-bg: #3d2800; --amber-border: #7a4f00;
-        --amber-text: #fac775; --green-text: #9fe1cb; --green-border: #0f6e56;
+        --bg:#1c1c1e; --bg2:#2c2c2e; --bg3:#3a3a3c;
+        --text:#f2f2f7; --text2:#aeaeb2; --text3:#636366;
+        --border:rgba(255,255,255,0.12); --border2:rgba(255,255,255,0.22);
+        --teal-light:#0a3d2b; --amber-bg:#3d2800; --amber-border:#7a4f00;
+        --amber-text:#fac775; --green-text:#9fe1cb; --green-border:#0f6e56;
       }
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; padding: 1rem; }
-    .app { background: var(--bg); max-width: 560px; margin: 0 auto; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
-    .tabs { display: flex; border-bottom: 0.5px solid var(--border); background: var(--bg); padding: 0 1rem; }
-    .tab { padding: 14px 18px; font-size: 14px; cursor: pointer; border: none; border-bottom: 2px solid transparent; color: var(--text2); background: none; font-family: inherit; transition: all .15s; }
-    .tab.active { color: var(--text); border-bottom-color: var(--teal); font-weight: 500; }
-    .tab:hover:not(.active) { color: var(--text); }
-    .panel { display: none; padding: 1.5rem 1.25rem; }
-    .panel.active { display: block; }
-    .header { margin-bottom: 2rem; }
-    .header h1 { font-size: 22px; font-weight: 600; color: var(--text); }
-    .header .date { font-size: 14px; color: var(--text2); margin-top: 4px; }
-    .timeline { position: relative; margin-bottom: 2rem; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg3); color:var(--text); min-height:100vh; padding:1rem; }
+    .app { background:var(--bg); max-width:560px; margin:0 auto; border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 2px 16px rgba(0,0,0,0.08); }
+    .tabs { display:flex; border-bottom:0.5px solid var(--border); background:var(--bg); padding:0 1rem; }
+    .tab { padding:14px 18px; font-size:14px; cursor:pointer; border:none; border-bottom:2px solid transparent; color:var(--text2); background:none; font-family:inherit; transition:all .15s; }
+    .tab.active { color:var(--text); border-bottom-color:var(--teal); font-weight:500; }
+    .tab:hover:not(.active) { color:var(--text); }
+    .panel { display:none; padding:1.5rem 1.25rem; }
+    .panel.active { display:block; }
+    .header { margin-bottom:2rem; }
+    .header h1 { font-size:22px; font-weight:600; color:var(--text); }
+    .header .date { font-size:14px; color:var(--text2); margin-top:4px; }
+    .timeline { position:relative; margin-bottom:2rem; }
     .timeline::before { content:''; position:absolute; left:20px; top:24px; bottom:24px; width:1px; background:var(--border); }
     .step { display:flex; align-items:flex-start; gap:16px; margin-bottom:20px; }
     .step-dot { width:40px; height:40px; border-radius:50%; border:2px solid var(--border2); background:var(--bg); display:flex; align-items:center; justify-content:center; flex-shrink:0; z-index:1; font-size:15px; transition:all .2s; }
@@ -61,15 +64,12 @@
     .metric { background:var(--bg); border-radius:var(--radius); padding:12px; border:.5px solid var(--border); }
     .metric-label { font-size:12px; color:var(--text2); margin-bottom:4px; }
     .metric-value { font-size:20px; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
-    .metric-value.ok { color:var(--teal); }
-    .metric-value.warn { color:#BA7517; }
-    .metric-value.bad { color:var(--red); }
+    .metric-value.ok { color:var(--teal); } .metric-value.warn { color:#BA7517; } .metric-value.bad { color:var(--red); }
     .progress-bar-wrap { margin-top:14px; }
     .progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--text2); margin-bottom:6px; }
     .progress-bar { height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
-    .progress-fill { height:100%; border-radius:4px; transition:width .6s ease, background .4s; background:var(--red); }
-    .progress-fill.mid { background:var(--amber); }
-    .progress-fill.ok { background:var(--teal); }
+    .progress-fill { height:100%; border-radius:4px; transition:width .6s ease,background .4s; background:var(--red); }
+    .progress-fill.mid { background:var(--amber); } .progress-fill.ok { background:var(--teal); }
     .ticker { font-size:12px; color:var(--text3); margin-top:6px; }
     .alert { padding:12px 16px; border-radius:var(--radius); font-size:14px; margin-bottom:1.25rem; border:.5px solid; line-height:1.5; }
     .alert.ok { background:var(--teal-light); border-color:var(--green-border); color:var(--green-text); }
@@ -81,11 +81,9 @@
     .train-body { padding:16px; background:var(--bg); }
     .train-next { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; }
     .train-time-big { font-size:36px; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
-    .train-time-big.ok { color:var(--teal); }
-    .train-time-big.warn { color:#BA7517; }
+    .train-time-big.ok { color:var(--teal); } .train-time-big.warn { color:#BA7517; }
     .train-margin { font-size:14px; }
-    .train-margin.ok { color:var(--teal); }
-    .train-margin.warn { color:#BA7517; }
+    .train-margin.ok { color:var(--teal); } .train-margin.warn { color:#BA7517; }
     .train-sub { font-size:13px; color:var(--text2); margin-bottom:14px; line-height:1.5; }
     .train-list { display:flex; flex-wrap:wrap; gap:8px; }
     .train-pill { padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500; border:.5px solid var(--border); color:var(--text2); background:var(--bg2); font-variant-numeric:tabular-nums; }
@@ -93,7 +91,7 @@
     .train-pill.catchable { background:var(--teal-light); border-color:var(--green-border); color:var(--green-text); }
     .train-pill.missed { opacity:.3; text-decoration:line-through; }
     .train-walk { font-size:12px; color:var(--text3); margin-top:12px; display:flex; align-items:center; gap:5px; }
-    .train-waiting { padding:12px 0 4px; font-size:14px; color:var(--text2); }
+    .train-waiting { padding:6px 0 4px; font-size:14px; color:var(--text2); }
     /* History */
     .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
     .section-title { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text2); }
@@ -105,28 +103,62 @@
     .history-detail { font-size:11px; color:var(--text3); margin-top:2px; }
     .history-right { text-align:right; }
     .history-hours { font-weight:600; font-size:15px; }
+    .edit-hist-btn { padding:4px 10px; font-size:12px; border-radius:var(--radius); border:.5px solid var(--border); background:transparent; color:var(--text2); cursor:pointer; font-family:inherit; margin-top:4px; }
+    .edit-hist-btn:hover { background:var(--bg2); }
+    /* Modal */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:100; padding:1rem; }
+    .modal-overlay.hidden { display:none; }
+    .modal { background:var(--bg); border-radius:var(--radius-lg); padding:1.5rem; width:100%; max-width:360px; border:.5px solid var(--border); }
+    .modal-title { font-size:16px; font-weight:600; color:var(--text); margin-bottom:4px; }
+    .modal-date { font-size:13px; color:var(--text2); margin-bottom:1.25rem; }
+    .modal-field { margin-bottom:1rem; }
+    .modal-field label { display:block; font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+    .modal-field input[type="time"] { width:100%; padding:9px 12px; border-radius:var(--radius); border:.5px solid var(--border2); background:var(--bg); color:var(--text); font-size:15px; font-family:inherit; }
+    .modal-actions { display:flex; gap:8px; margin-top:1.5rem; }
+    .modal-save { flex:1; padding:10px; border-radius:var(--radius); border:none; background:var(--teal); color:white; font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; }
+    .modal-save:hover { background:var(--teal-dark); }
+    .modal-cancel { padding:10px 16px; border-radius:var(--radius); border:.5px solid var(--border2); background:transparent; color:var(--text2); font-size:14px; cursor:pointer; font-family:inherit; }
+    .modal-cancel:hover { background:var(--bg2); }
+    .modal-delete { padding:10px 12px; border-radius:var(--radius); border:.5px solid #F7C1C1; background:transparent; color:var(--red); font-size:14px; cursor:pointer; font-family:inherit; }
+    .modal-delete:hover { background:#FCEBEB; }
     /* Timer */
     .timer-wrap { display:flex; flex-direction:column; align-items:center; padding:2rem 1rem 1.5rem; }
     .timer-ring-wrap { position:relative; width:220px; height:220px; margin-bottom:1.5rem; }
     .timer-ring-wrap svg { transform:rotate(-90deg); }
     .ring-bg { fill:none; stroke:rgba(0,0,0,0.1); stroke-width:10; }
-    .ring-fg { fill:none; stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset .8s ease, stroke .4s; }
+    .ring-fg { fill:none; stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset .8s ease,stroke .4s; }
     .timer-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
     .timer-display { font-size:40px; font-weight:600; color:var(--text); letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
     .timer-label { font-size:12px; color:var(--text2); margin-top:4px; text-transform:uppercase; letter-spacing:.08em; }
     .timer-status { font-size:14px; color:var(--text2); margin-bottom:1.5rem; min-height:22px; text-align:center; }
-    .timer-status.running { color:var(--teal); font-weight:500; }
-    .timer-status.paused { color:#BA7517; font-weight:500; }
-    .timer-status.done { color:var(--teal); font-weight:600; }
+    .timer-status.running { color:var(--teal); font-weight:500; } .timer-status.paused { color:#BA7517; font-weight:500; } .timer-status.done { color:var(--teal); font-weight:600; }
     .timer-info { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; width:100%; max-width:420px; margin-bottom:1.5rem; }
     .timer-metric { background:var(--bg2); border-radius:var(--radius); padding:10px 12px; text-align:center; }
     .timer-metric-label { font-size:11px; color:var(--text2); margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em; }
     .timer-metric-value { font-size:16px; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
     .timer-note { font-size:13px; color:var(--text3); text-align:center; line-height:1.6; max-width:340px; }
-    @media (max-width: 420px) { body { padding:.5rem; } .panel { padding:1.25rem 1rem; } .timer-display { font-size:32px; } }
+    @media (max-width:420px) { body{padding:.5rem;} .panel{padding:1.25rem 1rem;} .timer-display{font-size:32px;} }
   </style>
 </head>
 <body>
+
+<!-- Modal édition historique -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Modifier la journée</div>
+    <div class="modal-date" id="modal-date-label"></div>
+    <div class="modal-field"><label>Arrivée</label><input type="time" id="m-start"/></div>
+    <div class="modal-field"><label>Début de pause</label><input type="time" id="m-ps"/></div>
+    <div class="modal-field"><label>Fin de pause</label><input type="time" id="m-pe"/></div>
+    <div class="modal-field"><label>Départ</label><input type="time" id="m-end"/></div>
+    <div class="modal-actions">
+      <button class="modal-delete" onclick="deleteHistDay()">Supprimer</button>
+      <button class="modal-cancel" onclick="document.getElementById('modal-overlay').classList.add('hidden')">Annuler</button>
+      <button class="modal-save" onclick="saveHistDay()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <div class="tabs">
     <button class="tab active" onclick="switchTab('pointage')">Pointage</button>
@@ -137,44 +169,11 @@
     <div class="header"><h1>Suivi du temps</h1><div class="date" id="current-date"></div></div>
     <div id="alert-box" style="display:none"></div>
     <div class="timeline">
-      <div class="step">
-        <div class="step-dot" id="dot-start">🏢</div>
-        <div class="step-content">
-          <div class="step-label">Arrivée</div>
-          <div class="step-time" id="time-start">--:--</div>
-          <div class="step-btn-row"><button class="step-btn primary" id="btn-start" onclick="stamp('start')">Pointer l'arrivée</button><button class="reset-btn" id="reset-start" style="display:none" onclick="resetStep('start')">Modifier</button></div>
-          <div class="manual-input" id="manual-start" style="display:none"><input type="time" id="input-start"/><button class="step-btn" onclick="setManual('start')">OK</button></div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-dot" id="dot-pause-start">🍽</div>
-        <div class="step-content">
-          <div class="step-label">Début de pause</div>
-          <div class="step-time" id="time-pause-start">--:--</div>
-          <div class="step-btn-row"><button class="step-btn" id="btn-pause-start" onclick="stamp('pause-start')" disabled>Partir en pause</button><button class="reset-btn" id="reset-pause-start" style="display:none" onclick="resetStep('pause-start')">Modifier</button></div>
-          <div class="manual-input" id="manual-pause-start" style="display:none"><input type="time" id="input-pause-start"/><button class="step-btn" onclick="setManual('pause-start')">OK</button></div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-dot" id="dot-pause-end">☕</div>
-        <div class="step-content">
-          <div class="step-label">Fin de pause</div>
-          <div class="step-time" id="time-pause-end">--:--</div>
-          <div class="step-btn-row"><button class="step-btn" id="btn-pause-end" onclick="stamp('pause-end')" disabled>Reprendre le travail</button><button class="reset-btn" id="reset-pause-end" style="display:none" onclick="resetStep('pause-end')">Modifier</button></div>
-          <div class="manual-input" id="manual-pause-end" style="display:none"><input type="time" id="input-pause-end"/><button class="step-btn" onclick="setManual('pause-end')">OK</button></div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-dot" id="dot-end">🏠</div>
-        <div class="step-content">
-          <div class="step-label">Départ</div>
-          <div class="step-time" id="time-end">--:--</div>
-          <div class="step-btn-row"><button class="step-btn" id="btn-end" onclick="stamp('end')" disabled>Pointer le départ</button><button class="reset-btn" id="reset-end" style="display:none" onclick="resetStep('end')">Modifier</button></div>
-          <div class="manual-input" id="manual-end" style="display:none"><input type="time" id="input-end"/><button class="step-btn" onclick="setManual('end')">OK</button></div>
-        </div>
-      </div>
+      <div class="step"><div class="step-dot" id="dot-start">🏢</div><div class="step-content"><div class="step-label">Arrivée</div><div class="step-time" id="time-start">--:--</div><div class="step-btn-row"><button class="step-btn primary" id="btn-start" onclick="stamp('start')">Pointer l'arrivée</button><button class="reset-btn" id="reset-start" style="display:none" onclick="resetStep('start')">Modifier</button></div><div class="manual-input" id="manual-start" style="display:none"><input type="time" id="input-start"/><button class="step-btn" onclick="setManual('start')">OK</button></div></div></div>
+      <div class="step"><div class="step-dot" id="dot-pause-start">🍽</div><div class="step-content"><div class="step-label">Début de pause</div><div class="step-time" id="time-pause-start">--:--</div><div class="step-btn-row"><button class="step-btn" id="btn-pause-start" onclick="stamp('pause-start')" disabled>Partir en pause</button><button class="reset-btn" id="reset-pause-start" style="display:none" onclick="resetStep('pause-start')">Modifier</button></div><div class="manual-input" id="manual-pause-start" style="display:none"><input type="time" id="input-pause-start"/><button class="step-btn" onclick="setManual('pause-start')">OK</button></div></div></div>
+      <div class="step"><div class="step-dot" id="dot-pause-end">☕</div><div class="step-content"><div class="step-label">Fin de pause</div><div class="step-time" id="time-pause-end">--:--</div><div class="step-btn-row"><button class="step-btn" id="btn-pause-end" onclick="stamp('pause-end')" disabled>Reprendre le travail</button><button class="reset-btn" id="reset-pause-end" style="display:none" onclick="resetStep('pause-end')">Modifier</button></div><div class="manual-input" id="manual-pause-end" style="display:none"><input type="time" id="input-pause-end"/><button class="step-btn" onclick="setManual('pause-end')">OK</button></div></div></div>
+      <div class="step"><div class="step-dot" id="dot-end">🏠</div><div class="step-content"><div class="step-label">Départ</div><div class="step-time" id="time-end">--:--</div><div class="step-btn-row"><button class="step-btn" id="btn-end" onclick="stamp('end')" disabled>Pointer le départ</button><button class="reset-btn" id="reset-end" style="display:none" onclick="resetStep('end')">Modifier</button></div><div class="manual-input" id="manual-end" style="display:none"><input type="time" id="input-end"/><button class="step-btn" onclick="setManual('end')">OK</button></div></div></div>
     </div>
-
     <div class="summary" id="summary-box" style="display:none">
       <div class="summary-title">Récapitulatif du jour</div>
       <div class="summary-grid">
@@ -189,17 +188,10 @@
         <div class="ticker" id="ticker"></div>
       </div>
     </div>
-
     <div class="train-card">
-      <div class="train-header">
-        <span class="train-header-label">Prochain train</span>
-        <span style="font-size:12px;color:var(--text2)">10 min à pied jusqu'à la gare</span>
-      </div>
-      <div class="train-body" id="train-body">
-        <div class="train-waiting">En attente du pointage pour calculer votre train…</div>
-      </div>
+      <div class="train-header"><span class="train-header-label">Prochain train</span><span style="font-size:12px;color:var(--text2)">10 min à pied jusqu'à la gare</span></div>
+      <div class="train-body" id="train-body"><div class="train-waiting">En attente du pointage pour calculer votre train…</div></div>
     </div>
-
     <div>
       <div class="history-header">
         <div class="section-title">Historique (35 jours)</div>
@@ -209,7 +201,10 @@
         </button>
       </div>
       <div id="history-list" style="margin-top:12px"></div>
-      <div style="margin-top:14px"><button class="reset-btn" onclick="clearToday()">Réinitialiser la journée</button></div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="reset-btn" onclick="clearToday()">Réinitialiser aujourd'hui</button>
+        <button class="reset-btn" onclick="openNewEntry()">+ Ajouter une journée</button>
+      </div>
     </div>
   </div>
 
@@ -231,7 +226,7 @@
         <div class="timer-metric"><div class="timer-metric-label">Pause</div><div class="timer-metric-value" id="t-pause">--</div></div>
         <div class="timer-metric"><div class="timer-metric-label">Fin estimée</div><div class="timer-metric-value" id="t-eta">--:--</div></div>
       </div>
-      <div class="timer-note">Le minuteur démarre automatiquement à l'arrivée, se met en pause pendant le déjeuner et reprend au retour.</div>
+      <div class="timer-note">Le minuteur démarre à l'arrivée, se met en pause pendant le déjeuner et reprend au retour.</div>
     </div>
   </div>
 </div>
@@ -240,7 +235,9 @@
 const GOAL_MINS=7*60+15,GOAL_SECS=GOAL_MINS*60,MIN_PAUSE=50,WALK_MINS=10;
 const TRAINS=[17*60+15,17*60+29,17*60+44,17*60+59,18*60+15,18*60+29,18*60+44,18*60+59];
 const HISTORY_KEY='wt_history_v2',TODAY_KEY='wt_today_v2',CIRC=2*Math.PI*95;
-let state={},liveInterval=null,timerInterval=null;
+const DAYS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+let state={},liveInterval=null,timerInterval=null,editingDate=null;
+
 function loadState(){try{const s=localStorage.getItem(TODAY_KEY),t=new Date().toDateString();if(s){const p=JSON.parse(s);if(p.date===t){state=p;return;}}}catch(e){}state={date:new Date().toDateString(),start:null,'pause-start':null,'pause-end':null,end:null};}
 function saveState(){try{localStorage.setItem(TODAY_KEY,JSON.stringify(state));}catch(e){}if(state.start&&state.end)saveToHistory();}
 function getHistory(){try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');}catch(e){return[];}}
@@ -252,40 +249,59 @@ function minsToDisplay(m){if(m===null||m<0)return'--';const h=Math.floor(m/60),m
 function secsToHMS(s){if(s<0)s=0;return String(Math.floor(s/3600))+':'+String(Math.floor((s%3600)/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function getNow(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
 function nowSecs(){const n=new Date();return n.getHours()*3600+n.getMinutes()*60+n.getSeconds();}
+
+// Pause effective pour ETA : max(réelle, 50min)
+function effPause(pauseReal){ return Math.max(pauseReal!==null?pauseReal:0, MIN_PAUSE); }
+
 function computeEta(s,nowM){
   if(!s.start)return null;
   const sM=toMins(s.start),psM=s['pause-start']?toMins(s['pause-start']):null,peM=s['pause-end']?toMins(s['pause-end']):null,eM=s.end?toMins(s.end):nowM;
-  let pd=null;if(psM&&peM)pd=peM-psM;else if(psM&&!peM)pd=nowM-psM;
-  let w;if(s.end){w=eM-sM-(psM&&peM?peM-psM:0);}else if(s['pause-end']){w=nowM-sM-(peM-psM);}else if(s['pause-start']){w=psM-sM;}else{w=nowM-sM;}
-  const rem=Math.max(0,GOAL_MINS-w),pl=Math.max(0,MIN_PAUSE-(pd||0));
-  let eta=nowM+rem;if(!s['pause-end'])eta+=pl;
-  return{eta,worked:w,pauseDur:pd};
+  let pauseReal=null;
+  if(psM&&peM)pauseReal=peM-psM; else if(psM&&!peM)pauseReal=nowM-psM;
+  let worked;
+  if(s.end){worked=eM-sM-(psM&&peM?peM-psM:0);}
+  else if(s['pause-end']){worked=nowM-sM-(peM-psM);}
+  else if(s['pause-start']){worked=psM-sM;}
+  else{worked=nowM-sM;}
+  const rem=Math.max(0,GOAL_MINS-worked);
+  let eta;
+  if(s['pause-end']){ eta=nowM+rem; }
+  else if(s['pause-start']&&!s['pause-end']){ eta=nowM+Math.max(0,effPause(pauseReal)-pauseReal)+rem; }
+  else{ eta=nowM+rem+effPause(null); }
+  return{eta,worked,pauseReal};
 }
+
 function computeWorkedSecs(s,ns){
   if(!s.start)return{worked:0,pause:null,eta:null};
   const sS=toSecs(s.start),psS=s['pause-start']?toSecs(s['pause-start']):null,peS=s['pause-end']?toSecs(s['pause-end']):null,eS=s.end?toSecs(s.end):ns;
   let ps=null;if(psS&&peS)ps=peS-psS;else if(psS&&!peS)ps=ns-psS;
   let w;if(s.end){w=eS-sS-(psS&&peS?peS-psS:0);}else if(s['pause-end']){w=ns-sS-(peS-psS);}else if(s['pause-start']){w=psS-sS;}else{w=ns-sS;}
-  const rem=Math.max(0,GOAL_SECS-w),pl=Math.max(0,MIN_PAUSE*60-(ps||0));
-  let eta=ns+rem;if(!s['pause-end'])eta+=pl;
+  const effP=effPause(ps!==null?ps/60:null)*60;
+  const rem=Math.max(0,GOAL_SECS-w);
+  let eta;
+  if(s['pause-end']){eta=ns+rem;}
+  else if(s['pause-start']&&!s['pause-end']){eta=ns+Math.max(0,effP-(ps||0))+rem;}
+  else{eta=ns+rem+effP;}
   return{worked:Math.max(0,w),pause:ps,eta};
 }
+
 const SL=['start','pause-start','pause-end','end'],IC={start:'🏢','pause-start':'🍽','pause-end':'☕',end:'🏠'};
 function switchTab(t){document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('active',['pointage','minuteur'][i]===t));document.querySelectorAll('.panel').forEach((x,i)=>x.classList.toggle('active',['panel-pointage','panel-minuteur'][i]==='panel-'+t));}
 function stamp(step){state[step]=getNow();saveState();render();}
 function resetStep(step){document.getElementById('manual-'+step).style.display='flex';document.getElementById('reset-'+step).style.display='none';}
 function setManual(step){const v=document.getElementById('input-'+step).value;if(!v)return;state[step]=v;document.getElementById('manual-'+step).style.display='none';saveState();render();}
 function clearToday(){state={date:new Date().toDateString(),start:null,'pause-start':null,'pause-end':null,end:null};try{localStorage.setItem(TODAY_KEY,JSON.stringify(state));}catch(e){}render();}
+
 function render(){
-  const now=new Date();
-  document.getElementById('current-date').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const now=new Date();document.getElementById('current-date').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   SL.forEach((step,i)=>{
     const tE=document.getElementById('time-'+step),btn=document.getElementById('btn-'+step),dot=document.getElementById('dot-'+step),rb=document.getElementById('reset-'+step);
-    if(state[step]){tE.textContent=state[step];tE.style.opacity='1';dot.classList.add('done');dot.classList.remove('active');dot.textContent='✓';btn.style.display='none';rb.style.display='block';}
-    else{tE.textContent='--:--';tE.style.opacity='1';dot.classList.remove('done');rb.style.display='none';btn.style.display='inline-block';const prev=i===0||state[SL[i-1]];btn.disabled=!prev;if(prev)dot.classList.add('active');else{dot.classList.remove('active');dot.textContent=IC[step];}}
+    if(state[step]){tE.textContent=state[step];dot.classList.add('done');dot.classList.remove('active');dot.textContent='✓';btn.style.display='none';rb.style.display='block';}
+    else{tE.textContent='--:--';dot.classList.remove('done');rb.style.display='none';btn.style.display='inline-block';const prev=i===0||state[SL[i-1]];btn.disabled=!prev;if(prev)dot.classList.add('active');else{dot.classList.remove('active');dot.textContent=IC[step];}}
   });
   startLive();renderHistory();
 }
+
 function startLive(){
   if(liveInterval)clearInterval(liveInterval);if(timerInterval)clearInterval(timerInterval);
   if(!state.start){document.getElementById('summary-box').style.display='none';document.getElementById('alert-box').style.display='none';updateTimerUI(0,null,null,'idle');renderTrain(null);return;}
@@ -293,83 +309,99 @@ function startLive(){
   updateLive();updateTimer();
   if(!state.end){liveInterval=setInterval(()=>{updateLive();updateTimer();},1000);}
 }
+
 function updateLive(){
   const nowM=toMins(getNow()),res=computeEta(state,nowM);if(!res)return;
-  const{eta,worked,pauseDur}=res,pct=Math.min(100,Math.round((worked/GOAL_MINS)*100));
+  const{eta,worked,pauseReal}=res,pct=Math.min(100,Math.round((worked/GOAL_MINS)*100));
   const mW=document.getElementById('m-worked'),fill=document.getElementById('progress-fill'),pctEl=document.getElementById('progress-pct');
   mW.textContent=minsToDisplay(worked);
   if(worked>=GOAL_MINS){mW.className='metric-value ok';fill.className='progress-fill ok';}else if(pct>=70){mW.className='metric-value warn';fill.className='progress-fill mid';}else{mW.className='metric-value';fill.className='progress-fill';}
   fill.style.width=pct+'%';pctEl.textContent=pct+'%';
   const mP=document.getElementById('m-pause');
-  if(pauseDur!==null){mP.textContent=minsToDisplay(pauseDur);mP.className=pauseDur<MIN_PAUSE?'metric-value bad':'metric-value ok';}else{mP.textContent='--';mP.className='metric-value';}
+  if(pauseReal!==null){mP.textContent=minsToDisplay(pauseReal);mP.className=pauseReal<MIN_PAUSE?'metric-value warn':'metric-value ok';}else{mP.textContent='--';mP.className='metric-value';}
   document.getElementById('m-eta').textContent=minsToStr(eta);
-  if(!state.end){const r=Math.max(0,GOAL_MINS-worked);document.getElementById('ticker').textContent=r>0?'Encore '+minsToDisplay(r)+' pour atteindre l\'objectif':'Objectif atteint !';}else document.getElementById('ticker').textContent='';
+  if(!state.end){const r=Math.max(0,GOAL_MINS-worked);document.getElementById('ticker').textContent=r>0?'Encore '+minsToDisplay(r)+' à travailler':'Objectif atteint !';}else document.getElementById('ticker').textContent='';
   const box=document.getElementById('alert-box');
-  if(state.end){if(worked>=GOAL_MINS&&(!pauseDur||pauseDur>=MIN_PAUSE)){box.className='alert ok';box.textContent='✓ Journée complète ! Objectif 7h15 atteint.';box.style.display='block';}else if(worked>=GOAL_MINS&&pauseDur<MIN_PAUSE){box.className='alert warn';box.textContent='⚠ Heures OK, mais pause insuffisante ('+minsToDisplay(pauseDur)+' sur 50min).';box.style.display='block';}else{box.className='alert warn';box.textContent='⚠ Journée incomplète : '+minsToDisplay(worked)+' sur 7h15.';box.style.display='block';}}else box.style.display='none';
+  if(state.end){if(worked>=GOAL_MINS&&(!pauseReal||pauseReal>=MIN_PAUSE)){box.className='alert ok';box.textContent='✓ Journée complète ! Objectif 7h15 atteint.';box.style.display='block';}else if(worked>=GOAL_MINS&&pauseReal<MIN_PAUSE){box.className='alert warn';box.textContent='⚠ Heures OK, mais pause insuffisante ('+minsToDisplay(pauseReal)+' sur 50min).';box.style.display='block';}else{box.className='alert warn';box.textContent='⚠ Journée incomplète : '+minsToDisplay(worked)+' sur 7h15.';box.style.display='block';}}else box.style.display='none';
   renderTrain(eta);
 }
+
 function renderTrain(etaMins){
   const body=document.getElementById('train-body');
   if(etaMins===null){body.innerHTML='<div class="train-waiting">En attente du pointage pour calculer votre train…</div>';return;}
-  const dep=etaMins+WALK_MINS;
-  const catchable=TRAINS.filter(t=>t>=dep);
-  const next=catchable[0]||null;
+  const dep=etaMins+WALK_MINS,catchable=TRAINS.filter(t=>t>=dep),next=catchable[0]||null;
   let html='';
-  if(next===null){
-    html+=`<div style="font-size:15px;color:var(--red);font-weight:600;margin-bottom:8px;">Aucun train attrapable ce soir</div>`;
-    html+=`<div class="train-sub">Fin estimée ${minsToStr(etaMins)} + 10 min = arrivée gare ${minsToStr(dep)}. Dernier train à ${minsToStr(TRAINS[TRAINS.length-1])}.</div>`;
-  } else {
-    const margin=next-dep;
-    const comfy=margin>=5;
-    html+=`<div class="train-next"><div class="train-time-big ${comfy?'ok':'warn'}">${minsToStr(next)}</div><div class="train-margin ${comfy?'ok':'warn'}">${margin<=0?'pile à l\'heure':margin===1?'1 min de marge':margin+' min de marge'}</div></div>`;
-    html+=`<div class="train-sub">Fin estimée ${minsToStr(etaMins)} + 10 min de marche = arrivée gare ${minsToStr(dep)}.</div>`;
-  }
-  html+=`<div class="train-list">`;
-  TRAINS.forEach(t=>{
-    const missed=t<dep,isNext=t===next,isCatch=!missed&&t!==next;
-    html+=`<div class="train-pill${missed?' missed':isNext?' next':isCatch?' catchable':''}">${minsToStr(t)}</div>`;
-  });
+  if(next===null){html+=`<div style="font-size:15px;color:var(--red);font-weight:600;margin-bottom:8px;">Aucun train attrapable ce soir</div><div class="train-sub">Fin estimée ${minsToStr(etaMins)} + 10 min = arrivée gare ${minsToStr(dep)}. Dernier train à ${minsToStr(TRAINS[TRAINS.length-1])}.</div>`;}
+  else{const margin=next-dep,comfy=margin>=5;html+=`<div class="train-next"><div class="train-time-big ${comfy?'ok':'warn'}">${minsToStr(next)}</div><div class="train-margin ${comfy?'ok':'warn'}">${margin<=0?'pile à l\'heure':margin===1?'1 min de marge':margin+' min de marge'}</div></div><div class="train-sub">Fin estimée ${minsToStr(etaMins)} + 10 min de marche = arrivée gare ${minsToStr(dep)}.</div>`;}
+  html+=`<div class="train-list">`;TRAINS.forEach(t=>{const missed=t<dep,isNext=t===next,isCatch=!missed&&t!==next;html+=`<div class="train-pill${missed?' missed':isNext?' next':isCatch?' catchable':''}">${minsToStr(t)}</div>`;});
   html+=`</div><div class="train-walk"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="3" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.5L6 10l2 1.5 1.5 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M8 5.5l1.5 3-2 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>10 min de marche jusqu'à la gare</div>`;
   body.innerHTML=html;
 }
-function updateTimer(){
-  const ns=nowSecs(),{worked,pause,eta}=computeWorkedSecs(state,ns);
-  const isPaused=state['pause-start']&&!state['pause-end'],isDone=state.end||(worked>=GOAL_SECS);
-  let ts=!state.start?'idle':isDone?'done':isPaused?'paused':'running';
-  updateTimerUI(worked,pause,eta,ts);
-}
+
+function updateTimer(){const ns=nowSecs(),{worked,pause,eta}=computeWorkedSecs(state,ns);const isPaused=state['pause-start']&&!state['pause-end'],isDone=state.end||(worked>=GOAL_SECS);let ts=!state.start?'idle':isDone?'done':isPaused?'paused':'running';updateTimerUI(worked,pause,eta,ts);}
 function updateTimerUI(wS,pS,eS,ts){
   const rem=Math.max(0,GOAL_SECS-wS),pct=Math.min(1,wS/GOAL_SECS);
   const ring=document.getElementById('ring-fg'),disp=document.getElementById('timer-display'),lbl=document.getElementById('timer-label'),status=document.getElementById('timer-status');
   ring.style.strokeDasharray=CIRC;ring.style.strokeDashoffset=CIRC*(1-pct);
   if(ts==='done')ring.style.stroke='#1D9E75';else if(ts==='paused')ring.style.stroke='#EF9F27';else if(ts==='running')ring.style.stroke=pct>0.85?'#1D9E75':pct>0.5?'#EF9F27':'#E24B4A';else ring.style.stroke='rgba(0,0,0,0.1)';
   if(ts==='idle'){disp.textContent='7:15:00';lbl.textContent='à décompter';}else if(ts==='done'){disp.textContent='0:00:00';lbl.textContent='terminé !';}else{disp.textContent=secsToHMS(rem);lbl.textContent='restantes';}
-  status.className='timer-status';
-  if(ts==='idle')status.textContent="En attente du pointage d'arrivée";else if(ts==='running'){status.classList.add('running');status.textContent='En cours — décompte actif';}else if(ts==='paused'){status.classList.add('paused');status.textContent='En pause déjeuner';}else{status.classList.add('done');status.textContent='Objectif atteint !';}
-  document.getElementById('t-start').textContent=state.start||'--:--';
-  document.getElementById('t-pause').textContent=pS!==null?minsToDisplay(Math.floor(pS/60)):'--';
-  document.getElementById('t-eta').textContent=eS?minsToStr(Math.floor(eS/60)):'--:--';
+  status.className='timer-status';if(ts==='idle')status.textContent="En attente du pointage d'arrivée";else if(ts==='running'){status.classList.add('running');status.textContent='En cours — décompte actif';}else if(ts==='paused'){status.classList.add('paused');status.textContent='En pause déjeuner';}else{status.classList.add('done');status.textContent='Objectif atteint !';}
+  document.getElementById('t-start').textContent=state.start||'--:--';document.getElementById('t-pause').textContent=pS!==null?minsToDisplay(Math.floor(pS/60)):'--';document.getElementById('t-eta').textContent=eS?minsToStr(Math.floor(eS/60)):'--:--';
 }
+
 function renderHistory(){
   const el=document.getElementById('history-list'),hist=getHistory().slice().reverse();
   if(!hist.length){el.innerHTML='<div style="font-size:14px;color:var(--text2)">Aucune donnée enregistrée.</div>';return;}
-  const days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
   el.innerHTML=hist.map(h=>{
-    const d=new Date(h.date),label=days[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+    const d=new Date(h.date),label=DAYS[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
     let w=null,p=null;if(h.start&&h.end){const pp=(h['pause-start']&&h['pause-end'])?toMins(h['pause-end'])-toMins(h['pause-start']):0;w=toMins(h.end)-toMins(h.start)-pp;p=pp;}
     const ok=w!==null&&w>=GOAL_MINS&&p>=MIN_PAUSE,wn=w!==null&&(w<GOAL_MINS||p<MIN_PAUSE),color=ok?'#1D9E75':wn?'#BA7517':'var(--text)';
     const detail=h.start?(h.start+(h['pause-start']?(' → pause '+h['pause-start']+(h['pause-end']?' – '+h['pause-end']:'')):'')+(h.end?' → '+h.end:'')):'' ;
-    return`<div class="history-row"><div><div class="history-day">${label}</div><div class="history-detail">${detail}</div></div><div class="history-right"><div class="history-hours" style="color:${color}">${w!==null?minsToDisplay(w):'--'}</div><div class="history-detail">${p!==null?'pause '+minsToDisplay(p):''}</div></div></div>`;
+    return`<div class="history-row"><div><div class="history-day">${label}</div><div class="history-detail">${detail}</div></div><div class="history-right"><div class="history-hours" style="color:${color}">${w!==null?minsToDisplay(w):'--'}</div><div class="history-detail">${p!==null?'pause '+minsToDisplay(p):''}</div><button class="edit-hist-btn" onclick="openEditModal('${h.date}')">Modifier</button></div></div>`;
   }).join('');
 }
+
+function openEditModal(dateStr){
+  editingDate=dateStr;const hist=getHistory();const h=hist.find(x=>x.date===dateStr)||{};
+  const d=new Date(dateStr);document.getElementById('modal-date-label').textContent=DAYS[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+  document.getElementById('m-start').value=h.start||'';document.getElementById('m-ps').value=h['pause-start']||'';document.getElementById('m-pe').value=h['pause-end']||'';document.getElementById('m-end').value=h.end||'';
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function openNewEntry(){
+  const d=new Date();d.setDate(d.getDate()-1);const dateStr=d.toDateString();
+  const existing=getHistory().find(x=>x.date===dateStr);
+  if(existing){openEditModal(dateStr);return;}
+  editingDate=dateStr;const ld=new Date(dateStr);
+  document.getElementById('modal-date-label').textContent=DAYS[ld.getDay()]+' '+ld.getDate()+'/'+(ld.getMonth()+1)+'/'+ld.getFullYear()+' (nouvelle entrée)';
+  document.getElementById('m-start').value='';document.getElementById('m-ps').value='';document.getElementById('m-pe').value='';document.getElementById('m-end').value='';
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function saveHistDay(){
+  if(!editingDate)return;
+  const start=document.getElementById('m-start').value,ps=document.getElementById('m-ps').value,pe=document.getElementById('m-pe').value,end=document.getElementById('m-end').value;
+  let hist=getHistory();hist=hist.filter(x=>x.date!==editingDate);
+  if(start||end)hist.push({date:editingDate,start:start||null,'pause-start':ps||null,'pause-end':pe||null,end:end||null});
+  try{localStorage.setItem(HISTORY_KEY,JSON.stringify(hist));}catch(e){}
+  document.getElementById('modal-overlay').classList.add('hidden');editingDate=null;renderHistory();
+}
+
+function deleteHistDay(){
+  if(!editingDate)return;let hist=getHistory();hist=hist.filter(x=>x.date!==editingDate);
+  try{localStorage.setItem(HISTORY_KEY,JSON.stringify(hist));}catch(e){}
+  document.getElementById('modal-overlay').classList.add('hidden');editingDate=null;renderHistory();
+}
+
+function closeModal(e){document.getElementById('modal-overlay').classList.add('hidden');}
+
 function exportPDF(){
   const{jsPDF}=window.jspdf;if(!jsPDF){alert('PDF en cours de chargement, réessayez.');return;}
   const doc=new jsPDF({unit:'mm',format:'a4'}),hist=getHistory().slice().reverse();
-  const W=210,M=18,cW=W-M*2;let y=22;
-  const teal='#1D9E75',dark='#1a1a1a',mid='#555',light='#888',bg='#F4FAF7',warn='#BA7517',bad='#E24B4A';
+  const W=210,M=18,cW=W-M*2;let y=22;const teal='#1D9E75',dark='#1a1a1a',mid='#555',light='#888',bg='#F4FAF7',warn='#BA7517',bad='#E24B4A';
   doc.setFillColor(teal);doc.rect(0,0,W,14,'F');doc.setTextColor('#ffffff');doc.setFontSize(13);doc.setFont('helvetica','bold');doc.text('Rapport de suivi du temps',M,9.5);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Généré le '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),W-M,9.5,{align:'right'});
-  y=22;doc.setTextColor(dark);doc.setFontSize(10);doc.setFont('helvetica','bold');doc.text('Objectif journalier : 7h15 de travail effectif — Pause minimum : 50 minutes',M,y);y+=8;
+  y=22;doc.setTextColor(dark);doc.setFontSize(10);doc.setFont('helvetica','bold');doc.text('Objectif : 7h15 de travail effectif — Pause minimum : 50 minutes',M,y);y+=8;
   let tW=0,dOk=0,dC=0;hist.forEach(h=>{if(!h.start||!h.end)return;const p=(h['pause-start']&&h['pause-end'])?toMins(h['pause-end'])-toMins(h['pause-start']):0;const w=toMins(h.end)-toMins(h.start)-p;tW+=w;dC++;if(w>=GOAL_MINS&&p>=MIN_PAUSE)dOk++;});
   doc.setFillColor(bg);doc.roundedRect(M,y,cW,18,2,2,'F');const t3=cW/3;
   doc.setTextColor(mid);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Jours enregistrés',M+t3*.5,y+6,{align:'center'});doc.text('Jours conformes',M+t3*1.5,y+6,{align:'center'});doc.text('Total travaillé',M+t3*2.5,y+6,{align:'center'});
@@ -379,8 +411,7 @@ function exportPDF(){
   y+=2;doc.setDrawColor('#ccc');doc.setLineWidth(.3);doc.line(M,y,W-M,y);y+=5;doc.setFont('helvetica','normal');
   hist.forEach(h=>{
     if(y>270){doc.addPage();y=18;doc.setTextColor(mid);doc.setFontSize(8);doc.setFont('helvetica','bold');['Date','Arrivée','Dép. pause','Ret. pause','Départ','Travaillé','Pause'].forEach((hh,i)=>doc.text(hh,c[i],y));y+=2;doc.line(M,y,W-M,y);y+=5;doc.setFont('helvetica','normal');}
-    const d=new Date(h.date),days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-    const label=days[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+'/'+(String(d.getMonth()+1).padStart(2,'0'));
+    const d=new Date(h.date),label=DAYS[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+'/'+(String(d.getMonth()+1).padStart(2,'0'));
     let w=null,p=null;if(h.start&&h.end){const pp=(h['pause-start']&&h['pause-end'])?toMins(h['pause-end'])-toMins(h['pause-start']):0;w=toMins(h.end)-toMins(h.start)-pp;p=pp;}
     const ok=w>=GOAL_MINS&&p>=MIN_PAUSE;
     doc.setTextColor(dark);doc.text(label,c[0],y);doc.text(h.start||'--',c[1],y);doc.text(h['pause-start']||'--',c[2],y);doc.text(h['pause-end']||'--',c[3],y);doc.text(h.end||'--',c[4],y);
@@ -388,7 +419,7 @@ function exportPDF(){
     doc.setTextColor(p!==null&&p<MIN_PAUSE?bad:dark);doc.setFont('helvetica','normal');doc.text(p!==null?minsToDisplay(p):'--',c[6],y);
     y+=2;doc.setDrawColor('#efefef');doc.line(M,y,W-M,y);y+=5;doc.setTextColor(dark);
   });
-  y+=4;doc.setFontSize(7);doc.setTextColor(light);doc.setFont('helvetica','italic');doc.text('Vert = journée conforme  |  Orange = objectif non atteint ou pause insuffisante',M,y);
+  y+=4;doc.setFontSize(7);doc.setTextColor(light);doc.setFont('helvetica','italic');doc.text('Vert = conforme  |  Orange = objectif non atteint ou pause insuffisante',M,y);
   doc.save('suivi-heures-'+new Date().toISOString().slice(0,10)+'.pdf');
 }
 loadState();render();
