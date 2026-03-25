@@ -179,15 +179,20 @@
     /* Landscape */
     body.landscape{padding:1rem;}
     body.landscape .app{max-width:1100px;overflow:visible;}
-    body.landscape .tab:not(.layout-tab){display:none;}
-    body.landscape .landscape-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--bg);border-radius:0 0 var(--radius-lg) var(--radius-lg);overflow:hidden;border:.5px solid var(--border);border-top:none;}
-    body.landscape .landscape-col{padding:1.5rem 1.25rem;min-width:0;}
-    body.landscape .landscape-col:first-child{border-right:.5px solid var(--border);}
-    .landscape-grid{display:none;}
-    body.landscape .landscape-grid{display:grid;}
-    body.landscape #panel-pointage,body.landscape #panel-minuteur{display:none!important;}
-    .ls-col-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:1.25rem;display:none;}
-    body.landscape .ls-col-title{display:block;}
+    /* Tabs remain visible in landscape */
+    body.landscape .panel{padding:0;}
+    /* Landscape grids — one per panel, hidden by default */
+    .ls-grid{display:none;grid-template-columns:1fr 1fr;gap:0;background:var(--bg);}
+    .ls-col{padding:1.5rem 1.25rem;min-width:0;}
+    .ls-col:first-child{border-right:.5px solid var(--border);}
+    /* In landscape: panels hide their portrait content, show ls-grid instead */
+    body.landscape .panel.active > :not(.ls-grid){display:none!important;}
+    body.landscape .panel.active > .ls-grid{display:grid!important;}
+    /* Reglages panel: single column in landscape (no grid needed) */
+    body.landscape #panel-reglages{padding:1.5rem 1.25rem;}
+    body.landscape #panel-reglages.active > :not(.ls-grid){display:block!important;}
+    body.landscape #panel-reglages.active > .ls-grid{display:none!important;}
+    .ls-col-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:1.25rem;}
     @media(max-width:420px){body{padding:.5rem;}.panel{padding:1.25rem 1rem;}.timer-display{font-size:32px;}}
   </style>
 </head>
@@ -288,6 +293,60 @@
         <button class="reset-btn" onclick="exportCSV()">Exporter CSV</button>
       </div>
     </div>
+
+    <!-- Landscape grid for pointage -->
+    <div class="ls-grid">
+      <div class="ls-col">
+        <div class="ls-col-title">Pointage du jour</div>
+        <div id="alert-box-ls" style="display:none"></div>
+        <div class="timeline">
+          <div class="step"><div class="step-dot" id="ls-dot-start">🏢</div><div class="step-content"><div class="step-label">Arrivée</div><div class="step-time" id="ls-time-start">--:--</div><div class="step-btn-row"><button class="step-btn primary" id="ls-btn-start" onclick="stamp('start')">Pointer l'arrivée</button><button class="reset-btn" id="ls-reset-start" style="display:none" onclick="resetStep('start')">Modifier</button></div><div class="manual-input" id="ls-manual-start" style="display:none"><input type="time" id="ls-input-start"/><button class="step-btn" onclick="setManualLS('start')">OK</button></div></div></div>
+          <div class="step"><div class="step-dot" id="ls-dot-pause-start">🍽</div><div class="step-content"><div class="step-label">Début de pause</div><div class="step-time" id="ls-time-pause-start">--:--</div><div class="step-btn-row"><button class="step-btn" id="ls-btn-pause-start" onclick="stamp('pause-start')" disabled>Partir en pause</button><button class="reset-btn" id="ls-reset-pause-start" style="display:none" onclick="resetStep('pause-start')">Modifier</button></div><div class="manual-input" id="ls-manual-pause-start" style="display:none"><input type="time" id="ls-input-pause-start"/><button class="step-btn" onclick="setManualLS('pause-start')">OK</button></div></div></div>
+          <div class="step"><div class="step-dot" id="ls-dot-pause-end">☕</div><div class="step-content"><div class="step-label">Fin de pause</div><div class="step-time" id="ls-time-pause-end">--:--</div><div class="step-btn-row"><button class="step-btn" id="ls-btn-pause-end" onclick="stamp('pause-end')" disabled>Reprendre le travail</button><button class="reset-btn" id="ls-reset-pause-end" style="display:none" onclick="resetStep('pause-end')">Modifier</button></div><div class="manual-input" id="ls-manual-pause-end" style="display:none"><input type="time" id="ls-input-pause-end"/><button class="step-btn" onclick="setManualLS('pause-end')">OK</button></div></div></div>
+          <div class="step"><div class="step-dot" id="ls-dot-end">🏠</div><div class="step-content"><div class="step-label">Départ</div><div class="step-time" id="ls-time-end">--:--</div><div class="step-btn-row"><button class="step-btn" id="ls-btn-end" onclick="stamp('end')" disabled>Pointer le départ</button><button class="reset-btn" id="ls-reset-end" style="display:none" onclick="resetStep('end')">Modifier</button></div><div class="manual-input" id="ls-manual-end" style="display:none"><input type="time" id="ls-input-end"/><button class="step-btn" onclick="setManualLS('end')">OK</button></div></div></div>
+        </div>
+        <div class="summary" id="ls-summary-box" style="display:none">
+          <div class="summary-title">Récapitulatif</div>
+          <div class="summary-grid">
+            <div class="metric"><div class="metric-label">Temps travaillé</div><div class="metric-value" id="ls-m-worked">--</div></div>
+            <div class="metric"><div class="metric-label">Pause</div><div class="metric-value" id="ls-m-pause">--</div></div>
+            <div class="metric"><div class="metric-label">Fin estimée</div><div class="metric-value" id="ls-m-eta">--</div></div>
+            <div class="metric"><div class="metric-label">Objectif</div><div class="metric-value">7h15</div></div>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-label"><span>Progression</span><span id="ls-progress-pct">0%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="ls-progress-fill" style="width:0%"></div></div>
+            <div class="ticker" id="ls-ticker"></div>
+          </div>
+        </div>
+        <div class="balance-card" style="margin-top:1rem;">
+          <div class="balance-header"><span class="balance-header-label">Solde d'heures</span></div>
+          <div class="balance-body">
+            <div class="balance-metric"><div class="balance-val" id="ls-bal-week">--</div><div class="balance-lbl">Semaine</div></div>
+            <div class="balance-metric"><div class="balance-val" id="ls-bal-month">--</div><div class="balance-lbl">Mois</div></div>
+            <div class="balance-metric"><div class="balance-val" id="ls-bal-total">--</div><div class="balance-lbl">35 jours</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ls-col">
+        <div class="ls-col-title">Train & historique</div>
+        <div class="train-card" style="margin-bottom:1.5rem;">
+          <div class="train-header"><span class="train-header-label">Prochain train</span><span style="font-size:12px;color:var(--text2)">10 min à pied</span></div>
+          <div class="train-body" id="ls-train-body"><div class="train-waiting">En attente…</div></div>
+        </div>
+        <div>
+          <div class="history-header">
+            <div class="section-title">Historique (35 jours)</div>
+            <button class="export-btn" onclick="exportPDF()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1v9M4 7l4 4 4-4M2 12v2h12v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</button>
+          </div>
+          <div id="ls-history-list" style="margin-top:12px;max-height:340px;overflow-y:auto;"></div>
+          <div class="export-row" style="margin-top:10px;">
+            <button class="reset-btn" onclick="clearToday()">Réinitialiser aujourd'hui</button>
+            <button class="reset-btn" onclick="openModal()">+ Ajouter / modifier</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- PANEL MINUTEUR -->
@@ -304,6 +363,25 @@
         <div class="timer-metric"><div class="timer-metric-label">Fin estimée</div><div class="timer-metric-value" id="t-eta">--:--</div></div>
       </div>
       <div class="timer-note">Le minuteur démarre à l'arrivée, se met en pause pendant le déjeuner et reprend au retour.</div>
+    </div>
+
+    <!-- Landscape grid for minuteur -->
+    <div class="ls-grid" style="grid-template-columns:1fr;">
+      <div class="ls-col" style="display:flex;justify-content:center;">
+        <div class="timer-wrap" style="padding:2rem 1rem 1.5rem;">
+          <div class="timer-ring-wrap">
+            <svg width="220" height="220" viewBox="0 0 220 220" style="transform:rotate(-90deg)"><circle class="ring-bg" cx="110" cy="110" r="95"/><circle class="ring-fg" id="ls-ring-fg" cx="110" cy="110" r="95"/></svg>
+            <div class="timer-center"><div class="timer-display" id="ls-timer-display">7:15:00</div><div class="timer-label" id="ls-timer-label">à décompter</div></div>
+          </div>
+          <div class="timer-status" id="ls-timer-status">En attente du pointage d'arrivée</div>
+          <div class="timer-info">
+            <div class="timer-metric"><div class="timer-metric-label">Démarré</div><div class="timer-metric-value" id="ls-t-start">--:--</div></div>
+            <div class="timer-metric"><div class="timer-metric-label">Pause</div><div class="timer-metric-value" id="ls-t-pause">--</div></div>
+            <div class="timer-metric"><div class="timer-metric-label">Fin estimée</div><div class="timer-metric-value" id="ls-t-eta">--:--</div></div>
+          </div>
+          <div class="timer-note">Le minuteur démarre à l'arrivée, se met en pause pendant le déjeuner et reprend au retour.</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -366,75 +444,6 @@
     </div>
   </div>
 
-  <!-- LANDSCAPE GRID -->
-  <div class="landscape-grid">
-    <div class="landscape-col">
-      <div class="ls-col-title">Pointage du jour</div>
-      <div id="alert-box-ls" style="display:none"></div>
-      <div class="timeline">
-        <div class="step"><div class="step-dot" id="ls-dot-start">🏢</div><div class="step-content"><div class="step-label">Arrivée</div><div class="step-time" id="ls-time-start">--:--</div><div class="step-btn-row"><button class="step-btn primary" id="ls-btn-start" onclick="stamp('start')">Pointer l'arrivée</button><button class="reset-btn" id="ls-reset-start" style="display:none" onclick="resetStep('start')">Modifier</button></div><div class="manual-input" id="ls-manual-start" style="display:none"><input type="time" id="ls-input-start"/><button class="step-btn" onclick="setManualLS('start')">OK</button></div></div></div>
-        <div class="step"><div class="step-dot" id="ls-dot-pause-start">🍽</div><div class="step-content"><div class="step-label">Début de pause</div><div class="step-time" id="ls-time-pause-start">--:--</div><div class="step-btn-row"><button class="step-btn" id="ls-btn-pause-start" onclick="stamp('pause-start')" disabled>Partir en pause</button><button class="reset-btn" id="ls-reset-pause-start" style="display:none" onclick="resetStep('pause-start')">Modifier</button></div><div class="manual-input" id="ls-manual-pause-start" style="display:none"><input type="time" id="ls-input-pause-start"/><button class="step-btn" onclick="setManualLS('pause-start')">OK</button></div></div></div>
-        <div class="step"><div class="step-dot" id="ls-dot-pause-end">☕</div><div class="step-content"><div class="step-label">Fin de pause</div><div class="step-time" id="ls-time-pause-end">--:--</div><div class="step-btn-row"><button class="step-btn" id="ls-btn-pause-end" onclick="stamp('pause-end')" disabled>Reprendre le travail</button><button class="reset-btn" id="ls-reset-pause-end" style="display:none" onclick="resetStep('pause-end')">Modifier</button></div><div class="manual-input" id="ls-manual-pause-end" style="display:none"><input type="time" id="ls-input-pause-end"/><button class="step-btn" onclick="setManualLS('pause-end')">OK</button></div></div></div>
-        <div class="step"><div class="step-dot" id="ls-dot-end">🏠</div><div class="step-content"><div class="step-label">Départ</div><div class="step-time" id="ls-time-end">--:--</div><div class="step-btn-row"><button class="step-btn" id="ls-btn-end" onclick="stamp('end')" disabled>Pointer le départ</button><button class="reset-btn" id="ls-reset-end" style="display:none" onclick="resetStep('end')">Modifier</button></div><div class="manual-input" id="ls-manual-end" style="display:none"><input type="time" id="ls-input-end"/><button class="step-btn" onclick="setManualLS('end')">OK</button></div></div></div>
-      </div>
-      <div class="summary" id="ls-summary-box" style="display:none">
-        <div class="summary-title">Récapitulatif</div>
-        <div class="summary-grid">
-          <div class="metric"><div class="metric-label">Temps travaillé</div><div class="metric-value" id="ls-m-worked">--</div></div>
-          <div class="metric"><div class="metric-label">Pause</div><div class="metric-value" id="ls-m-pause">--</div></div>
-          <div class="metric"><div class="metric-label">Fin estimée</div><div class="metric-value" id="ls-m-eta">--</div></div>
-          <div class="metric"><div class="metric-label">Objectif</div><div class="metric-value">7h15</div></div>
-        </div>
-        <div class="progress-bar-wrap">
-          <div class="progress-label"><span>Progression</span><span id="ls-progress-pct">0%</span></div>
-          <div class="progress-bar"><div class="progress-fill" id="ls-progress-fill" style="width:0%"></div></div>
-          <div class="ticker" id="ls-ticker"></div>
-        </div>
-      </div>
-      <div class="timer-wrap" style="align-items:flex-start;padding-top:1.25rem;">
-        <div style="display:flex;align-items:center;gap:1.5rem;width:100%;">
-          <div style="position:relative;width:140px;height:140px;flex-shrink:0;">
-            <svg width="140" height="140" viewBox="0 0 220 220" style="transform:rotate(-90deg)"><circle class="ring-bg" cx="110" cy="110" r="95"/><circle class="ring-fg" id="ls-ring-fg" cx="110" cy="110" r="95"/></svg>
-            <div class="timer-center"><div class="timer-display" id="ls-timer-display" style="font-size:26px;">7:15:00</div><div class="timer-label" id="ls-timer-label">à décompter</div></div>
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div class="timer-status" id="ls-timer-status" style="text-align:left;margin-bottom:.75rem;">En attente</div>
-            <div class="timer-info" style="max-width:100%;">
-              <div class="timer-metric"><div class="timer-metric-label">Démarré</div><div class="timer-metric-value" id="ls-t-start">--:--</div></div>
-              <div class="timer-metric"><div class="timer-metric-label">Pause</div><div class="timer-metric-value" id="ls-t-pause">--</div></div>
-              <div class="timer-metric"><div class="timer-metric-label">Fin est.</div><div class="timer-metric-value" id="ls-t-eta">--:--</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="landscape-col">
-      <div class="ls-col-title">Train & historique</div>
-      <div class="balance-card" style="margin-bottom:1.5rem;">
-        <div class="balance-header"><span class="balance-header-label">Solde d'heures</span></div>
-        <div class="balance-body">
-          <div class="balance-metric"><div class="balance-val" id="ls-bal-week">--</div><div class="balance-lbl">Cette semaine</div></div>
-          <div class="balance-metric"><div class="balance-val" id="ls-bal-month">--</div><div class="balance-lbl">Ce mois</div></div>
-          <div class="balance-metric"><div class="balance-val" id="ls-bal-total">--</div><div class="balance-lbl">35 jours</div></div>
-        </div>
-      </div>
-      <div class="train-card" style="margin-bottom:1.5rem;">
-        <div class="train-header"><span class="train-header-label">Prochain train</span><span style="font-size:12px;color:var(--text2)">10 min à pied</span></div>
-        <div class="train-body" id="ls-train-body"><div class="train-waiting">En attente…</div></div>
-      </div>
-      <div>
-        <div class="history-header">
-          <div class="section-title">Historique (35 jours)</div>
-          <button class="export-btn" onclick="exportPDF()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1v9M4 7l4 4 4-4M2 12v2h12v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</button>
-        </div>
-        <div id="ls-history-list" style="margin-top:12px;max-height:300px;overflow-y:auto;"></div>
-        <div class="export-row" style="margin-top:10px;">
-          <button class="reset-btn" onclick="clearToday()">Réinitialiser aujourd'hui</button>
-          <button class="reset-btn" onclick="openModal()">+ Ajouter / modifier</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -543,6 +552,7 @@ function switchTab(t){
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
   const p=document.getElementById('panel-'+t);if(p)p.classList.add('active');
   if(t==='reglages')renderNotifUI();
+  if(typeof isLandscape!=='undefined'&&isLandscape)renderLS();
 }
 function stamp(step){state[step]=getNow();saveState();render();}
 function resetStep(step){document.getElementById('manual-'+step).style.display='flex';document.getElementById('reset-'+step).style.display='none';}
@@ -561,7 +571,7 @@ function render(){
       else{tE.textContent='--:--';dot.classList.remove('done');rb.style.display='none';btn.style.display='inline-block';const prev=i===0||state[SL[i-1]];btn.disabled=!prev;if(prev)dot.classList.add('active');else{dot.classList.remove('active');dot.textContent=IC[step];}}
     });
   });
-  startLive();renderHistory();if(isLandscape)renderLS();
+  startLive();renderHistory();if(typeof isLandscape!=='undefined'&&isLandscape)renderLS();
 }
 
 function startLive(){
@@ -573,7 +583,7 @@ function startLive(){
   }
   document.getElementById('summary-box').style.display='block';
   updateLive();updateTimerFromState();
-  if(!state.end){liveInterval=setInterval(()=>{updateLive();updateTimerFromState();if(isLandscape)renderLS();},1000);}
+  if(!state.end){liveInterval=setInterval(()=>{updateLive();updateTimerFromState();if(typeof isLandscape!=='undefined'&&isLandscape)renderLS();},1000);}
 }
 
 function updateLive(){
@@ -790,43 +800,92 @@ function applyLayout(){
   icon.innerHTML=isLandscape?'<rect x="3" y="1" width="10" height="14" rx="1.5" stroke="currentColor" stroke-width="1.3"/>':'<rect x="1" y="1" width="6" height="14" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="1" width="6" height="14" rx="1.5" stroke="currentColor" stroke-width="1.3"/>';
   if(isLandscape)renderLS();
 }
+
+// Render all landscape elements based on which panel is active
 function renderLS(){
   if(!isLandscape)return;
+  const activePanel=document.querySelector('.panel.active');
+  if(!activePanel)return;
+  const panelId=activePanel.id;
+
+  if(panelId==='panel-pointage'){
+    renderLSPointage();
+  } else if(panelId==='panel-minuteur'){
+    renderLSMinuteur();
+  }
+  // panel-reglages: no ls-grid, portrait layout re-shown by CSS override
+}
+
+function renderLSPointage(){
+  // Steps
   SL.forEach((step,i)=>{
     const tE=document.getElementById('ls-time-'+step),btn=document.getElementById('ls-btn-'+step),dot=document.getElementById('ls-dot-'+step),rb=document.getElementById('ls-reset-'+step);
     if(!tE)return;
     if(state[step]){tE.textContent=state[step];dot.classList.add('done');dot.classList.remove('active');dot.textContent='✓';btn.style.display='none';rb.style.display='block';}
     else{tE.textContent='--:--';dot.classList.remove('done');rb.style.display='none';btn.style.display='inline-block';const prev=i===0||state[SL[i-1]];btn.disabled=!prev;if(prev)dot.classList.add('active');else{dot.classList.remove('active');dot.textContent=IC[step];}}
   });
+  // Summary
   const nowM=toMins(getNow()),res=computeEta(state,nowM);
-  if(!res){document.getElementById('ls-summary-box').style.display='none';document.getElementById('alert-box-ls').style.display='none';updateLSTimerUI(0,null,null,'idle');renderLSHistory();return;}
-  document.getElementById('ls-summary-box').style.display='block';
-  const{eta,worked,pauseReal}=res,pct=Math.min(100,Math.round((worked/GOAL_MINS)*100));
-  const mW=document.getElementById('ls-m-worked'),fill=document.getElementById('ls-progress-fill'),pctEl=document.getElementById('ls-progress-pct');
-  mW.textContent=minsToDisplay(worked);
-  if(worked>=GOAL_MINS){mW.className='metric-value ok';fill.className='progress-fill ok';}else if(pct>=70){mW.className='metric-value warn';fill.className='progress-fill mid';}else{mW.className='metric-value';fill.className='progress-fill';}
-  fill.style.width=pct+'%';pctEl.textContent=pct+'%';
-  const mP=document.getElementById('ls-m-pause');
-  if(pauseReal!==null){mP.textContent=minsToDisplay(pauseReal);mP.className=pauseReal<MIN_PAUSE?'metric-value warn':'metric-value ok';}else{mP.textContent='--';mP.className='metric-value';}
-  document.getElementById('ls-m-eta').textContent=minsToStr(eta);
-  if(!state.end){const r=Math.max(0,GOAL_MINS-worked);document.getElementById('ls-ticker').textContent=r>0?'Encore '+minsToDisplay(r)+' à travailler':'Objectif atteint !';}else document.getElementById('ls-ticker').textContent='';
-  const box=document.getElementById('alert-box-ls');
-  if(state.end){if(worked>=GOAL_MINS&&(!pauseReal||pauseReal>=MIN_PAUSE)){box.className='alert ok';box.textContent='✓ Journée complète !';box.style.display='block';}else if(worked>=GOAL_MINS&&pauseReal<MIN_PAUSE){box.className='alert warn';box.textContent='⚠ Pause insuffisante.';box.style.display='block';}else{box.className='alert warn';box.textContent='⚠ '+minsToDisplay(worked)+' / 7h15.';box.style.display='block';}}else box.style.display='none';
-  const ns=nowSecs(),{worked:wS,pause:pS,eta:eS}=computeWorkedSecs(state,ns);
-  const isPaused=state['pause-start']&&!state['pause-end'],isDone=state.end||(wS>=GOAL_SECS);
-  updateLSTimerUI(wS,pS,eS,!state.start?'idle':isDone?'done':isPaused?'paused':'running');
+  const lsSummary=document.getElementById('ls-summary-box');
+  const lsAlert=document.getElementById('alert-box-ls');
+  if(!res){if(lsSummary)lsSummary.style.display='none';if(lsAlert)lsAlert.style.display='none';}
+  else{
+    if(lsSummary)lsSummary.style.display='block';
+    const{eta,worked,pauseReal}=res,pct=Math.min(100,Math.round((worked/GOAL_MINS)*100));
+    const mW=document.getElementById('ls-m-worked'),fill=document.getElementById('ls-progress-fill'),pctEl=document.getElementById('ls-progress-pct');
+    if(mW){mW.textContent=minsToDisplay(worked);if(worked>=GOAL_MINS){mW.className='metric-value ok';fill.className='progress-fill ok';}else if(pct>=70){mW.className='metric-value warn';fill.className='progress-fill mid';}else{mW.className='metric-value';fill.className='progress-fill';}fill.style.width=pct+'%';pctEl.textContent=pct+'%';}
+    const mP=document.getElementById('ls-m-pause');
+    if(mP){if(pauseReal!==null){mP.textContent=minsToDisplay(pauseReal);mP.className=pauseReal<MIN_PAUSE?'metric-value warn':'metric-value ok';}else{mP.textContent='--';mP.className='metric-value';}}
+    const mEta=document.getElementById('ls-m-eta');if(mEta)mEta.textContent=minsToStr(eta);
+    const ticker=document.getElementById('ls-ticker');if(ticker&&!state.end){const r=Math.max(0,GOAL_MINS-worked);ticker.textContent=r>0?'Encore '+minsToDisplay(r)+' à travailler':'Objectif atteint !';}
+    if(lsAlert){if(state.end){if(worked>=GOAL_MINS&&(!pauseReal||pauseReal>=MIN_PAUSE)){lsAlert.className='alert ok';lsAlert.textContent='✓ Journée complète !';lsAlert.style.display='block';}else if(worked>=GOAL_MINS&&pauseReal<MIN_PAUSE){lsAlert.className='alert warn';lsAlert.textContent='⚠ Pause insuffisante.';lsAlert.style.display='block';}else{lsAlert.className='alert warn';lsAlert.textContent='⚠ '+minsToDisplay(worked)+' / 7h15.';lsAlert.style.display='block';}}else lsAlert.style.display='none';}
+    // Train (pointage panel)
+    renderLSTrainEl('ls-train-body', eta);
+    // Balance
+    renderLSBalance(['ls-bal-week','ls-bal-month','ls-bal-total']);
+  }
+  // History
   renderLSHistory();
 }
-function updateLSTimerUI(wS,pS,eS,ts){
+
+function renderLSMinuteur(){
+  const ns=nowSecs(),{worked:wS,pause:pS,eta:eS}=computeWorkedSecs(state,ns);
+  const isPaused=state['pause-start']&&!state['pause-end'],isDone=state.end||(wS>=GOAL_SECS);
+  const ts=!state.start?'idle':isDone?'done':isPaused?'paused':'running';
   const rem=Math.max(0,GOAL_SECS-wS),pct=Math.min(1,wS/GOAL_SECS);
-  const ring=document.getElementById('ls-ring-fg');if(!ring)return;
-  ring.style.strokeDasharray=CIRC;ring.style.strokeDashoffset=CIRC*(1-pct);
-  if(ts==='done')ring.style.stroke='#1D9E75';else if(ts==='paused')ring.style.stroke='#EF9F27';else if(ts==='running')ring.style.stroke=pct>0.85?'#1D9E75':pct>0.5?'#EF9F27':'#E24B4A';else ring.style.stroke='rgba(0,0,0,.1)';
+  const ring=document.getElementById('ls-ring-fg');
+  if(ring){ring.style.strokeDasharray=CIRC;ring.style.strokeDashoffset=CIRC*(1-pct);if(ts==='done')ring.style.stroke='#1D9E75';else if(ts==='paused')ring.style.stroke='#EF9F27';else if(ts==='running')ring.style.stroke=pct>0.85?'#1D9E75':pct>0.5?'#EF9F27':'#E24B4A';else ring.style.stroke='rgba(0,0,0,.1)';}
   const disp=document.getElementById('ls-timer-display'),lbl=document.getElementById('ls-timer-label'),status=document.getElementById('ls-timer-status');
-  if(ts==='idle'){disp.textContent='7:15:00';lbl.textContent='à décompter';}else if(ts==='done'){disp.textContent='0:00:00';lbl.textContent='terminé !';}else{disp.textContent=secsToHMS(rem);lbl.textContent='restantes';}
-  status.className='timer-status';if(ts==='idle')status.textContent='En attente';else if(ts==='running'){status.classList.add('running');status.textContent='En cours';}else if(ts==='paused'){status.classList.add('paused');status.textContent='En pause';}else{status.classList.add('done');status.textContent='Objectif atteint !';}
-  document.getElementById('ls-t-start').textContent=state.start||'--:--';document.getElementById('ls-t-pause').textContent=pS!==null?minsToDisplay(Math.floor(pS/60)):'--';document.getElementById('ls-t-eta').textContent=eS?minsToStr(Math.floor(eS/60)):'--:--';
+  if(disp){if(ts==='idle'){disp.textContent='7:15:00';lbl.textContent='à décompter';}else if(ts==='done'){disp.textContent='0:00:00';lbl.textContent='terminé !';}else{disp.textContent=secsToHMS(rem);lbl.textContent='restantes';}}
+  if(status){status.className='timer-status';if(ts==='idle')status.textContent="En attente du pointage d'arrivée";else if(ts==='running'){status.classList.add('running');status.textContent='En cours — décompte actif';}else if(ts==='paused'){status.classList.add('paused');status.textContent='En pause déjeuner';}else{status.classList.add('done');status.textContent='Objectif atteint !';}}
+  const tStart=document.getElementById('ls-t-start'),tPause=document.getElementById('ls-t-pause'),tEta=document.getElementById('ls-t-eta');
+  if(tStart)tStart.textContent=state.start||'--:--';
+  if(tPause)tPause.textContent=pS!==null?minsToDisplay(Math.floor(pS/60)):'--';
+  if(tEta)tEta.textContent=eS?minsToStr(Math.floor(eS/60)):'--:--';
 }
+
+function renderLSTrainEl(bodyId, etaMins){
+  const body=document.getElementById(bodyId);if(!body)return;
+  if(etaMins===null){body.innerHTML='<div class="train-waiting">En attente du pointage…</div>';return;}
+  const dep=etaMins+WALK_MINS,catchable=TRAINS.filter(t=>t>=dep),next=catchable[0]||null;
+  let html='';
+  if(next===null){html+=`<div style="font-size:15px;color:var(--red);font-weight:600;margin-bottom:8px;">Aucun train attrapable</div><div class="train-sub">Fin ${minsToStr(etaMins)} + 10 min → ${minsToStr(dep)}.</div>`;}
+  else{const margin=next-dep,comfy=margin>=5;html+=`<div class="train-next"><div class="train-time-big ${comfy?'ok':'warn'}">${minsToStr(next)}</div><div class="train-margin ${comfy?'ok':'warn'}">${margin<=0?'pile à l\'heure':margin+' min de marge'}</div></div><div class="train-sub">Fin ${minsToStr(etaMins)} + 10 min → gare ${minsToStr(dep)}.</div>`;}
+  html+=`<div class="train-list">`;TRAINS.forEach(t=>{const missed=t<dep,isNext=t===next,isCatch=!missed&&t!==next;html+=`<div class="train-pill${missed?' missed':isNext?' next':isCatch?' catchable':''}">${minsToStr(t)}</div>`;});html+=`</div>`;
+  body.innerHTML=html;
+}
+
+function renderLSBalance(ids){
+  const b=computeBalance();
+  const keys=['week','month','total'];
+  ids.forEach((id,i)=>{
+    const el=document.getElementById(id);if(!el)return;
+    const v=b[keys[i]];
+    if(v===null){el.textContent='--';el.className='balance-val';return;}
+    el.textContent=minsToSigned(v);el.className='balance-val '+(v>=0?'metric-value pos':'metric-value neg');
+  });
+}
+
 function renderLSHistory(){
   const el=document.getElementById('ls-history-list');if(!el)return;
   const hist=getHistory().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -837,43 +896,6 @@ function renderLSHistory(){
     const ok=w!==null&&w>=GOAL_MINS&&p>=MIN_PAUSE,wn=w!==null&&(w<GOAL_MINS||p<MIN_PAUSE),color=ok?'#1D9E75':wn?'#BA7517':'var(--text)';
     return`<div class="history-row"><div><div class="history-day">${label}</div></div><div class="history-right"><div class="history-hours" style="color:${color}">${w!==null?minsToDisplay(w):'--'}</div><button class="edit-hist-btn" onclick="openModal('${h.date}')">Modifier</button></div></div>`;
   }).join('');
-}
-
-// ── PDF Export ──
-function exportPDF(){
-  const{jsPDF}=window.jspdf;if(!jsPDF){alert('PDF en cours de chargement, réessayez.');return;}
-  const doc=new jsPDF({unit:'mm',format:'a4'}),hist=getHistory().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
-  const W=210,M=18,cW=W-M*2;let y=22;const teal='#1D9E75',dark='#1a1a1a',mid='#555',light='#888',bg='#F4FAF7',warn='#BA7517',bad='#E24B4A';
-  doc.setFillColor(teal);doc.rect(0,0,W,14,'F');doc.setTextColor('#fff');doc.setFontSize(13);doc.setFont('helvetica','bold');doc.text('Rapport de suivi du temps',M,9.5);
-  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Généré le '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),W-M,9.5,{align:'right'});
-  y=22;doc.setTextColor(dark);doc.setFontSize(10);doc.setFont('helvetica','bold');doc.text('Objectif : 7h15 de travail effectif — Pause minimum : 50 minutes',M,y);y+=8;
-  let tW=0,dOk=0,dC=0;hist.forEach(h=>{if(!h.start||!h.end)return;const p=(h['pause-start']&&h['pause-end'])?toMins(h['pause-end'])-toMins(h['pause-start']):0;const w=toMins(h.end)-toMins(h.start)-p;tW+=w;dC++;if(w>=GOAL_MINS&&p>=MIN_PAUSE)dOk++;});
-  // Solde
-  const bal=computeBalance();
-  doc.setFillColor(bg);doc.roundedRect(M,y,cW,22,2,2,'F');const q=cW/4;
-  doc.setTextColor(mid);doc.setFontSize(8);doc.setFont('helvetica','normal');
-  doc.text('Jours enregistrés',M+q*.5,y+6,{align:'center'});doc.text('Jours conformes',M+q*1.5,y+6,{align:'center'});doc.text('Total travaillé',M+q*2.5,y+6,{align:'center'});doc.text('Solde total',M+q*3.5,y+6,{align:'center'});
-  doc.setTextColor(dark);doc.setFontSize(13);doc.setFont('helvetica','bold');
-  doc.text(String(dC),M+q*.5,y+15,{align:'center'});
-  doc.setTextColor(dOk===dC&&dC>0?teal:warn);doc.text(dOk+'/'+dC,M+q*1.5,y+15,{align:'center'});
-  doc.setTextColor(dark);doc.text(minsToDisplay(tW),M+q*2.5,y+15,{align:'center'});
-  const bv=bal.total;doc.setTextColor(bv===null?dark:bv>=0?teal:bad);doc.text(bv!==null?minsToSigned(bv):'--',M+q*3.5,y+15,{align:'center'});
-  y+=30;
-  const c=[M,M+38,M+58,M+82,M+104,M+130,M+154];
-  doc.setTextColor(mid);doc.setFontSize(8);doc.setFont('helvetica','bold');['Date','Arrivée','Dép. pause','Ret. pause','Départ','Travaillé','Pause'].forEach((h,i)=>doc.text(h,c[i],y));
-  y+=2;doc.setDrawColor('#ccc');doc.setLineWidth(.3);doc.line(M,y,W-M,y);y+=5;doc.setFont('helvetica','normal');
-  hist.forEach(h=>{
-    if(y>270){doc.addPage();y=18;doc.setTextColor(mid);doc.setFontSize(8);doc.setFont('helvetica','bold');['Date','Arrivée','Dép. pause','Ret. pause','Départ','Travaillé','Pause'].forEach((hh,i)=>doc.text(hh,c[i],y));y+=2;doc.line(M,y,W-M,y);y+=5;doc.setFont('helvetica','normal');}
-    const d=new Date(h.date),label=DAYS_S[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+'/'+(String(d.getMonth()+1).padStart(2,'0'));
-    let w=null,p=null;if(h.start&&h.end){const pp=(h['pause-start']&&h['pause-end'])?toMins(h['pause-end'])-toMins(h['pause-start']):0;w=toMins(h.end)-toMins(h.start)-pp;p=pp;}
-    const ok=w>=GOAL_MINS&&p>=MIN_PAUSE;
-    doc.setTextColor(dark);doc.text(label,c[0],y);doc.text(h.start||'--',c[1],y);doc.text(h['pause-start']||'--',c[2],y);doc.text(h['pause-end']||'--',c[3],y);doc.text(h.end||'--',c[4],y);
-    doc.setTextColor(ok?teal:warn);doc.setFont('helvetica','bold');doc.text(w!==null?minsToDisplay(w):'--',c[5],y);
-    doc.setTextColor(p!==null&&p<MIN_PAUSE?bad:dark);doc.setFont('helvetica','normal');doc.text(p!==null?minsToDisplay(p):'--',c[6],y);
-    y+=2;doc.setDrawColor('#efefef');doc.line(M,y,W-M,y);y+=5;doc.setTextColor(dark);
-  });
-  y+=4;doc.setFontSize(7);doc.setTextColor(light);doc.setFont('helvetica','italic');doc.text('Vert = conforme  |  Orange = objectif non atteint ou pause insuffisante',M,y);
-  doc.save('suivi-heures-'+new Date().toISOString().slice(0,10)+'.pdf');
 }
 
 loadState();applyLayout();renderNotifUI();render();
